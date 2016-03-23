@@ -4,7 +4,7 @@
 
 - *Collaborative* playlists are followed.
 - *Public* and *private* playlists are copied.
-- Followed playlists are followed.
+- Subscribed playlists are followed.
 
 Production app is available here: http://trikatuka-aknakn.rhcloud.com/
 How to: http://aknowakowski.blogspot.com/p/trikatuka2.html
