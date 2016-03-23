@@ -26,6 +26,10 @@ app.controller('PlaylistListCtrl', function ($scope, $resource, users, Spotify, 
     }
 
     $scope.transferAll = function(){
+        var confirmed = confirm('Are you sure you want to transfer all playlists?');
+        if(!confirmed){
+            return;
+        }
         var playlists = [];
         var collectingPlaylistsPromises = [];
 
@@ -42,6 +46,10 @@ app.controller('PlaylistListCtrl', function ($scope, $resource, users, Spotify, 
     };
 
     $scope.transferSelected = function () {
+        var confirmed = confirm('Are you sure you want to transfer selected playlists?');
+        if(!confirmed){
+            return;
+        }
         var items = checkboxes.cache;
         transfer(items);
     };

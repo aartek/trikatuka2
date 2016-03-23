@@ -21,6 +21,10 @@ app.controller('TrackListCtrl', function ($scope, $resource, users, Spotify, Pag
     }
 
     $scope.transferAll = function(){
+        var confirmed = confirm('Are you sure you want to transfer all tracks?');
+        if(!confirmed){
+            return;
+        }
         $rootScope.$broadcast('DISABLE_VIEW');
         TrackService.transferAll(users.user1, users.user2).then(function(){
             alert('Transfering tracks done.\n\nYou may need to login again to your Spotify client to see the results.');
