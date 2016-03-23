@@ -1,0 +1,110 @@
+"use strict";
+
+app.controller('PlaylistListCtrl', function ($scope, $resource, users, Spotify, Pagination, Checkboxes, PlaylistService, Playlist, $rootScope, $q) {
+
+    var pagination = $scope.pagination = new Pagination();
+    pagination.setChangeCallback(load);
+
+    var checkboxes = $scope.checkboxes = new Checkboxes();
+
+    function loadPlaylists(params){
+        return PlaylistService.loadPlaylists(users.user1, params, transformer);
+    }
+
+    function load() {
+        loadPlaylists(pagination.getParams()).then(function (playlists) {
+            checkboxes.pageSwitch();
+            $scope.items = playlists.items;
+            pagination.updateTotal(playlists.total);
+        });
+    }
+
+    load();
+
+    function transformer(item) {
+        return new Playlist(item, users.user1);
+    }
+
+    $scope.transferAll = function(){
+        var playlists = [];
+        var collectingPlaylistsPromises = [];
+
+        var pages = Math.ceil(pagination.total / 50);
+        for (var i = 0; i<pages; i++){
+            collectingPlaylistsPromises.push(loadPlaylists({limit: 50, offset: i * 50}).then(function(result){
+                playlists = playlists.concat(result.items);
+            }));
+        }
+
+        $q.all(collectingPlaylistsPromises).then(function(){
+            transfer(playlists);
+        });
+    };
+
+    $scope.transferSelected = function () {
+        var items = checkboxes.cache;
+        transfer(items);
+    };
+
+    function transfer(items){
+        $rootScope.$broadcast('DISABLE_VIEW');
+        var promises = [];
+
+        _.each(items, function (item) {
+            promises.push(item.transfer(users.user2));
+        });
+
+        $q.all(promises).then(function (results) {
+            var successNames = _.chain(results).filter(function (item) {
+                return item.success;
+            }).map(function (item) {
+                return item.playlist.name
+            }).value();
+
+            var failedNames = _.chain(results).filter(function (item) {
+                return !item.success;
+            }).map(function (item) {
+                return item.playlist.name
+            }).value();
+
+            var msg = '';
+            if(successNames.length) {
+                msg += sprintf('Successfully transfered playlist(s):\n%s\n\n', successNames.join(',\n'));
+            }
+            if(failedNames.length) {
+                msg += sprintf('Failed to transfer playlist(s):\n%s', failedNames.join(',\n'));
+            }
+            alert(msg);
+
+            $rootScope.$broadcast('ENABLE_VIEW');
+            checkboxes.clearCache();
+        });
+    }
+
+    if (users.user1.authData) {
+        load();
+    }
+
+    $scope.$on('USER_LOGGED_IN', function (event, user) {
+        if (user.id === 'user1') {
+            load();
+        }
+    });
+
+    $scope.$on('USER_LOGGED_OUT', function (event, user) {
+        if (user.id === 'user1') {
+            $scope.items = null;
+            pagination.updateTotal(0);
+            checkboxes.clearCache();
+            checkboxes.removeCheckboxes()
+        }
+    });
+
+    $scope.$on('DISABLE_VIEW', function () {
+        $scope.viewDisabled = true;
+    });
+
+    $scope.$on('ENABLE_VIEW', function () {
+        $scope.viewDisabled = false;
+    });
+});
