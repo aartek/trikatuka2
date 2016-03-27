@@ -47,8 +47,7 @@ angular.module('trikatuka2').controller('TrackListCtrl', function ($scope, $reso
         if (user.id === 'user1') {
             $scope.items = null;
             pagination.updateTotal(0);
-            checkboxes.clearCache();
-            checkboxes.removeCheckboxes()
         }
     });
 });
+//# sourceURL=TrackListCtrl.js
