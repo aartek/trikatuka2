@@ -1,6 +1,6 @@
 "use strict";
 
-app.factory('Playlist', function(Spotify ,$q, PlaylistService, $timeout){
+angular.module('trikatuka2').factory('Playlist', function(Spotify ,$q, PlaylistService, $timeout){
     this.playlistId = null;
     this.tracksCount = null;
     this.name = null;

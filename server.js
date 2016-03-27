@@ -5,6 +5,8 @@ var methodOverride = require('method-override');
 var querystring = require('querystring');
 var request = require('request');
 var config = require('config');
+var glob = require("glob");
+var path = require('path');
 
 var CLIENT_ID = config.get('CLIENT_ID');
 var CLIENT_SECRET = config.get('CLIENT_SECRET');
@@ -13,12 +15,12 @@ var app = express();
 var server = require('http').createServer(app);
 var io = require('socket.io').listen(server);
 
-var webappDir = __dirname + '/webapp/';
+var webappDir = path.join(__dirname,'/webapp/');
 
 app.use(express.static(webappDir));     // set the static files location /public/img will be /img for users
 app.use(morgan('dev'));                     // log every request to the console
-app.use(bodyParser.urlencoded({extended: false}))    // parse application/x-www-form-urlencoded
-app.use(bodyParser.json())    // parse application/json
+app.use(bodyParser.urlencoded({extended: false}));    // parse application/x-www-form-urlencoded
+app.use(bodyParser.json());    // parse application/json
 app.use(methodOverride());                  // simulate DELETE and PUT
 
 var CLIENT_ID = '27edb2ed1e2c4c5c8cd7e192c81e37e8';
@@ -34,7 +36,7 @@ if(process.env.name === 'dev'){
     baseUrl = 'http://localhost:7878'
 }
 else {
-    server_port = process.env.OPENSHIFT_NODEJS_PORT || 8080;
+    server_port = process.env.OPENSHIFT_NODEJS_PORT || 8083;
     server_ip_address = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1';
     baseUrl = 'http://trikatuka-aknakn.rhcloud.com'
 }
@@ -42,7 +44,7 @@ else {
 server.listen(server_port, server_ip_address);
 console.log('Magic happens on port ' + server_port);
 
-var cnt = 0;
+
 io.on('connection', function (socket) {
     socket.on('login', function(processId, callback){
 
@@ -87,22 +89,8 @@ io.on('connection', function (socket) {
     });
 });
 
-app.route('rest/klient').
-    get(function(req, res){
-        res.json({imie: 'aa', b:'ddd'})
-    })
-    .post(function(req, res){
-        var data = req.body;
-        var id = zapiszDane(data);
-        req.json({id: id});
-    })
-    .put(function(req, res){
-        var data = req.body;
-    });
-
-
 app.route('/afterLogin').get(function(req, res){
-    res.sendFile(webappDir + 'afterLogin.html');
+    res.sendFile(path.join(webappDir,'afterLogin.html'));
 });
 
 app.route('/user_auth_callback')
@@ -129,13 +117,24 @@ app.route('/user_auth_callback')
             json: true
         }, function (error, response, body) {
             processAuthCallback(req, res, body, true);
-            //var split = req.query.state.split(':');
-            //var socketId = split[0];
-            //var signingProccessId = split[1];
-            //body.signingProccessId = signingProccessId;
-            //io.to('/#'+socketId).emit('user_logged_in', body);
-            //res.redirect('loginSuccess');
         });
+    });
+
+app.route('/files')
+    .get(function(req, res){
+        if(process.env.name === 'dev') {
+            var files = glob.sync(path.join(webappDir, 'app/**/*.js'));
+            var result = [];
+            var filter = webappDir.replace(/\\/g, '/');
+            files.forEach(function (file) {
+                result.push(file.split(filter)[1]);
+            });
+            res.json(result);
+        }
+        else{
+            res.json(['dist/app.min.js']);
+        }
+
     });
 
 function processAuthCallback(req, res, body, success){

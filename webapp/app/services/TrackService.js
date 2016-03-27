@@ -1,6 +1,6 @@
 "use strict";
 
-app.service('TrackService', function (Spotify, $q) {
+angular.module('trikatuka2').service('TrackService', function (Spotify, $q) {
     this.loadTracks = function(user, params, itemsTransformer){
         return Spotify.get('https://api.spotify.com/v1/me/tracks', user, params).then(function(response){
             return {

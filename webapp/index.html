@@ -4,31 +4,7 @@
     <meta charset="UTF-8">
     <title>Trikatuka - Spotify migration tool</title>
 
-    <script src="https://code.jquery.com/jquery-2.2.1.min.js"
-            integrity="sha256-gvQgAFzTH6trSrAWoH1iPo9Xc96QxSZ3feW6kem+O00=" crossorigin="anonymous"></script>
-    <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/sprintf/1.0.3/sprintf.min.js"></script>
-    <script type="text/javascript" src="http://ciasteczka.eu/cookiesEU-latest.min.js"></script>
-    <script src="js/uikit.min.js"></script>
-    <!--<script src="js/angular.min.js"></script>-->
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.0/angular.js"></script>
-    <script src="js/angular-route.min.js"></script>
-    <script src="js/angular-resource.min.js"></script>
-    <script src="js/socket.js"></script>
-    <script src="app/app.js"></script>
-    <script src="app/MainCtrl.js"></script>
-    <script src="app/PlaylistListCtrl.js"></script>
-    <script src="app/TrackListCtrl.js"></script>
-    <script src="app/Spotify.js"></script>
-    <script src="app/User.js"></script>
-    <script src="app/Checkboxes.js"></script>
-    <script src="app/Pagination.js"></script>
-    <script src="app/Playlist.js"></script>
-    <script src="app/Track.js"></script>
-    <script src="app/PlaylistService.js"></script>
-    <script src="app/TrackService.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ngStorage/0.3.6/ngStorage.min.js"></script>
+    <script src="dist/libs.min.js"></script>
     <link rel="stylesheet" href="css/uikit.min.css">
 
     <style>
@@ -56,7 +32,7 @@
 
 </head>
 <body>
-<div ng-app="trikatuka2" data-uk-observe>
+<div id="app" data-uk-observe style="visibility: hidden">
     <nav class="uk-navbar" style="background: #292929">
         <div class="uk-container uk-container-center">
         <span class="uk-navbar-brand" style="color: #fff">
@@ -124,8 +100,19 @@
     </div>
 </div>
 <script type="text/javascript">
+    jQuery(document).on('ready',function(){
+        jQuery.get('files', function(response){
+            var appDiv = $('#app');
 
-    jQuery(document).ready(function(){
+            var head= $('head');
+            angular.forEach(response, function(item){
+                head.append('<script src="' + item + '">');
+            });
+
+            appDiv.css({visibility:'visible'});
+            angular.bootstrap(appDiv, ['trikatuka2']);
+        }, 'json');
+
         jQuery.fn.cookiesEU({
             text: 'This website makes use of cookies to enhance browsing experience and provide additional functionality. By closing this message you give your permission to this website to store small bits of data as on your device.',
             position: 'top',

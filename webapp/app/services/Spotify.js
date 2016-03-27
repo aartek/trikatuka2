@@ -1,6 +1,6 @@
 "use strict";
 
-app.service('Spotify', function ($http, $q) {
+angular.module('trikatuka2').service('Spotify', function ($http, $q) {
     this.get = function (url, user, params) {
         return beforeRequest(user).then(function (usr) {
             return $http({

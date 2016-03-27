@@ -1,6 +1,6 @@
 "use strict";
 
-app.factory('Pagination', function () {
+angular.module('trikatuka2').factory('Pagination', function () {
     function Pagination() {
         this.limit = 10;
         this.offset = 0;

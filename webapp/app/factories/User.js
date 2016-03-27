@@ -1,6 +1,6 @@
 "use strict";
 
-app.factory('User', function (mySocket, Spotify, $sessionStorage, $rootScope, $http, $q) {
+angular.module('trikatuka2').factory('User', function (mySocket, Spotify, $sessionStorage, $rootScope, $http, $q) {
     function User(id, authData) {
         this.authData = authData;
         this.data = null;

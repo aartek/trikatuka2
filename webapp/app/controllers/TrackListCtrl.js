@@ -1,6 +1,6 @@
 "use strict";
 
-app.controller('TrackListCtrl', function ($scope, $resource, users, Spotify, Pagination, TrackService, Track, $rootScope, $q) {
+angular.module('trikatuka2').controller('TrackListCtrl', function ($scope, $resource, users, Spotify, Pagination, TrackService, Track, $rootScope, $q) {
 
     var pagination = $scope.pagination = new Pagination();
     pagination.setChangeCallback(load);
