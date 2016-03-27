@@ -13,7 +13,7 @@ angular.module('trikatuka2').run(function ($sessionStorage, users, User) {
     users.user1 = new User('user1', $sessionStorage.user1);
     users.user2 = new User('user2', $sessionStorage.user2);
 });
-
+//# sourceURL=app.js
 
 
 "use strict";
@@ -30,7 +30,7 @@ angular.module('trikatuka2').controller('LoginCtrl', function ($scope, users) {
         $scope.viewDisabled = false;
     });
 });
-
+//# sourceURL=LoginCtrl.js
 
 "use strict";
 
@@ -48,7 +48,7 @@ angular.module('trikatuka2').controller('MainCtrl', function ($scope, users){
         self.viewDisabled = false;
     });
 });
-
+//# sourceURL=MainCtrl.js
 "use strict";
 
 angular.module('trikatuka2').controller('PlaylistListCtrl', function ($scope, $resource, users, Spotify, Pagination, Checkboxes, PlaylistService, Playlist, $rootScope, $q) {
@@ -167,7 +167,7 @@ angular.module('trikatuka2').controller('PlaylistListCtrl', function ($scope, $r
         $scope.viewDisabled = false;
     });
 });
-
+//# sourceURL=PlaylistListCtrl.js
 "use strict";
 
 angular.module('trikatuka2').controller('TrackListCtrl', function ($scope, $resource, users, Spotify, Pagination, TrackService, Track, $rootScope, $q) {
@@ -217,12 +217,10 @@ angular.module('trikatuka2').controller('TrackListCtrl', function ($scope, $reso
         if (user.id === 'user1') {
             $scope.items = null;
             pagination.updateTotal(0);
-            checkboxes.clearCache();
-            checkboxes.removeCheckboxes()
         }
     });
 });
-
+//# sourceURL=TrackListCtrl.js
 "use strict";
 
 angular.module('trikatuka2').directive('checkbox', function () {
@@ -274,7 +272,7 @@ angular.module('trikatuka2').directive('checkbox', function () {
         }
     }
 });
-
+//# sourceURL=checkbox.js
 "use strict";
 
 
@@ -293,7 +291,7 @@ angular.module('trikatuka2').directive('owner', function($http){
         }
     }
 });
-
+//# sourceURL=owner.js
 "use strict";
 
 angular.module('trikatuka2').factory('Checkboxes', function () {
@@ -359,6 +357,7 @@ angular.module('trikatuka2').factory('Checkboxes', function () {
 
     return Checkboxes;
 });
+//# sourceURL=Checkboxes.js
 "use strict";
 
 angular.module('trikatuka2').factory('Pagination', function () {
@@ -368,6 +367,8 @@ angular.module('trikatuka2').factory('Pagination', function () {
         this.total = 0;
         this.pages = 0;
         this.currentPage = 0;
+        //this.nextDisabled = true;
+        //this.prevDisabled = true;
     };
 
     Pagination.prototype.updateTotal = function(total){
@@ -422,7 +423,7 @@ angular.module('trikatuka2').factory('Pagination', function () {
             pagination.prevDisabled = false;
         }
 
-        if(pagination.offset + pagination.limit > pagination.total){
+        if(pagination.offset + pagination.limit >= pagination.total){
             pagination.nextDisabled = true;
         }
         else{
@@ -433,6 +434,7 @@ angular.module('trikatuka2').factory('Pagination', function () {
     return Pagination;
 
 });
+//# sourceURL=Pagination.js
 "use strict";
 
 angular.module('trikatuka2').factory('Playlist', function(Spotify ,$q, PlaylistService, $timeout){
@@ -532,7 +534,7 @@ angular.module('trikatuka2').factory('Playlist', function(Spotify ,$q, PlaylistS
     return Playlist;
 
 });
-
+//# sourceURL=Playlist.js
 "use strict";
 
 angular.module('trikatuka2').factory('Track', function(Spotify ,$q, TrackService){
@@ -553,7 +555,7 @@ angular.module('trikatuka2').factory('Track', function(Spotify ,$q, TrackService
     return Track;
 
 });
-
+//# sourceURL=Track.js
 "use strict";
 
 angular.module('trikatuka2').factory('User', function (mySocket, Spotify, $sessionStorage, $rootScope, $http, $q) {
@@ -637,12 +639,13 @@ angular.module('trikatuka2').factory('User', function (mySocket, Spotify, $sessi
 
     return User;
 });
+//# sourceURL=User.js
 "use strict";
 
 angular.module('trikatuka2').factory('mySocket', function (socketFactory) {
     return socketFactory();
 });
-
+//# sourceURL=mySocket.js
 "use strict";
 
 angular.module('trikatuka2').service('PlaylistService', function (Spotify, $q) {
@@ -681,7 +684,7 @@ angular.module('trikatuka2').service('PlaylistService', function (Spotify, $q) {
         return $q.all(promises);
     }
 });
-
+//# sourceURL=PlaylistService.js
 "use strict";
 
 angular.module('trikatuka2').service('Spotify', function ($http, $q) {
@@ -747,7 +750,7 @@ angular.module('trikatuka2').service('Spotify', function ($http, $q) {
         };
     }
 });
-
+//# sourceURL=Spotify.js
 "use strict";
 
 angular.module('trikatuka2').service('TrackService', function (Spotify, $q) {
@@ -819,10 +822,11 @@ angular.module('trikatuka2').service('TrackService', function (Spotify, $q) {
         });
     }
 });
-
+//# sourceURL=TrackService.js
 "use strict";
 
 angular.module('trikatuka2').service('users', function (User) {
     this.user1 = null;
     this.user2 = null;
 });
+//# sourceURL=users.js

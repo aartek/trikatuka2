@@ -12,4 +12,4 @@ angular.module('trikatuka2').controller('LoginCtrl', function ($scope, users) {
         $scope.viewDisabled = false;
     });
 });
-
+//# sourceURL=LoginCtrl.js

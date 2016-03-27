@@ -69,3 +69,4 @@ angular.module('trikatuka2').service('TrackService', function (Spotify, $q) {
         });
     }
 });
+//# sourceURL=TrackService.js

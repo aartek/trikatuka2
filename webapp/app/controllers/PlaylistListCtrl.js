@@ -116,3 +116,4 @@ angular.module('trikatuka2').controller('PlaylistListCtrl', function ($scope, $r
         $scope.viewDisabled = false;
     });
 });
+//# sourceURL=PlaylistListCtrl.js

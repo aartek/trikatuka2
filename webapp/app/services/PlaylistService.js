@@ -36,3 +36,4 @@ angular.module('trikatuka2').service('PlaylistService', function (Spotify, $q) {
         return $q.all(promises);
     }
 });
+//# sourceURL=PlaylistService.js

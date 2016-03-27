@@ -49,3 +49,4 @@ angular.module('trikatuka2').directive('checkbox', function () {
         }
     }
 });
+//# sourceURL=checkbox.js

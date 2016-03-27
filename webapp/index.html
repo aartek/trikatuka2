@@ -106,7 +106,7 @@
 
             var head= $('head');
             angular.forEach(response, function(item){
-                head.append('<script src="' + item + '">');
+                head.append('<script src="' + item + '" type="application/javascript">');
             });
 
             appDiv.css({visibility:'visible'});

@@ -16,3 +16,4 @@ angular.module('trikatuka2').directive('owner', function($http){
         }
     }
 });
+//# sourceURL=owner.js

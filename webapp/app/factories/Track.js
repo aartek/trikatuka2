@@ -18,3 +18,4 @@ angular.module('trikatuka2').factory('Track', function(Spotify ,$q, TrackService
     return Track;
 
 });
+//# sourceURL=Track.js

@@ -97,3 +97,4 @@ angular.module('trikatuka2').factory('Playlist', function(Spotify ,$q, PlaylistS
     return Playlist;
 
 });
+//# sourceURL=Playlist.js

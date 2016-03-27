@@ -81,3 +81,4 @@ angular.module('trikatuka2').factory('User', function (mySocket, Spotify, $sessi
 
     return User;
 });
+//# sourceURL=User.js
