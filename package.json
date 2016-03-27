@@ -5,9 +5,11 @@
     "body-parser": "~1.0.0",
     "config": "^1.19.0",
     "express": "^4.13.4",
+    "glob": "^7.0.3",
     "http": "0.0.0",
     "method-override": "~1.0.0",
     "morgan": "~1.0.0",
+    "path": "^0.12.7",
     "querystring": "^0.2.0",
     "request": "^2.69.0",
     "socket.io": "^1.4.5"

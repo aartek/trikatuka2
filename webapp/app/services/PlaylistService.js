@@ -1,6 +1,6 @@
 "use strict";
 
-app.service('PlaylistService', function (Spotify, $q) {
+angular.module('trikatuka2').service('PlaylistService', function (Spotify, $q) {
     this.loadPlaylists = function(user, params, itemsTransformer){
         return Spotify.get('https://api.spotify.com/v1/me/playlists', user, params).then(function(response){
             return {
@@ -36,3 +36,4 @@ app.service('PlaylistService', function (Spotify, $q) {
         return $q.all(promises);
     }
 });
+//# sourceURL=PlaylistService.js

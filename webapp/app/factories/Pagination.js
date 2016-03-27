@@ -1,12 +1,14 @@
 "use strict";
 
-app.factory('Pagination', function () {
+angular.module('trikatuka2').factory('Pagination', function () {
     function Pagination() {
         this.limit = 10;
         this.offset = 0;
         this.total = 0;
         this.pages = 0;
         this.currentPage = 0;
+        //this.nextDisabled = true;
+        //this.prevDisabled = true;
     };
 
     Pagination.prototype.updateTotal = function(total){
@@ -61,7 +63,7 @@ app.factory('Pagination', function () {
             pagination.prevDisabled = false;
         }
 
-        if(pagination.offset + pagination.limit > pagination.total){
+        if(pagination.offset + pagination.limit >= pagination.total){
             pagination.nextDisabled = true;
         }
         else{
@@ -72,3 +74,4 @@ app.factory('Pagination', function () {
     return Pagination;
 
 });
+//# sourceURL=Pagination.js

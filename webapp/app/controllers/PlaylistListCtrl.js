@@ -1,6 +1,6 @@
 "use strict";
 
-app.controller('PlaylistListCtrl', function ($scope, $resource, users, Spotify, Pagination, Checkboxes, PlaylistService, Playlist, $rootScope, $q) {
+angular.module('trikatuka2').controller('PlaylistListCtrl', function ($scope, $resource, users, Spotify, Pagination, Checkboxes, PlaylistService, Playlist, $rootScope, $q) {
 
     var pagination = $scope.pagination = new Pagination();
     pagination.setChangeCallback(load);
@@ -116,3 +116,4 @@ app.controller('PlaylistListCtrl', function ($scope, $resource, users, Spotify, 
         $scope.viewDisabled = false;
     });
 });
+//# sourceURL=PlaylistListCtrl.js

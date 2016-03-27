@@ -1,6 +1,6 @@
 "use strict";
 
-app.controller('MainCtrl', function ($scope, users){
+angular.module('trikatuka2').controller('MainCtrl', function ($scope, users){
     var self = this;
     self.viewDisabled = false;
     self.user1 = users.user1;
@@ -14,3 +14,4 @@ app.controller('MainCtrl', function ($scope, users){
         self.viewDisabled = false;
     });
 });
+//# sourceURL=MainCtrl.js
