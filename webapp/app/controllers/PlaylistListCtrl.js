@@ -1,6 +1,7 @@
 "use strict";
 
-angular.module('trikatuka2').controller('PlaylistListCtrl', function ($scope, $resource, users, Spotify, Pagination, Checkboxes, PlaylistService, Playlist, $rootScope, $q) {
+angular.module('trikatuka2').controller('PlaylistListCtrl', function ($scope, $resource, users, Spotify, Pagination,
+    Checkboxes, PlaylistService, Playlist, $rootScope, $q, RequestHelper) {
 
     var pagination = $scope.pagination = new Pagination();
     pagination.setChangeCallback(load);
@@ -50,30 +51,24 @@ angular.module('trikatuka2').controller('PlaylistListCtrl', function ($scope, $r
         if(!confirmed){
             return;
         }
-        var items = checkboxes.cache;
+        var items = _.toArray(checkboxes.cache);
         transfer(items);
     };
 
     function transfer(items){
         $rootScope.$broadcast('DISABLE_VIEW');
-        var promises = [];
 
-        _.each(items, function (item) {
-            promises.push(item.transfer(users.user2));
-        });
-
-        $q.all(promises).then(function (results) {
-            var successNames = _.chain(results).filter(function (item) {
-                return item.success;
-            }).map(function (item) {
+        RequestHelper.doAction('transfer', items, [users.user2]).then(function (result) {
+            var successNames = _.map(result.success, function (item) {
                 return item.playlist.name
-            }).value();
+            });
 
-            var failedNames = _.chain(results).filter(function (item) {
-                return !item.success;
-            }).map(function (item) {
+            var failedNames = _.map(result.fail, function (item) {
                 return item.playlist.name
-            }).value();
+            });
+
+            $rootScope.$broadcast('ENABLE_VIEW');
+            checkboxes.clearCache();
 
             var msg = '';
             if(successNames.length) {
@@ -82,10 +77,8 @@ angular.module('trikatuka2').controller('PlaylistListCtrl', function ($scope, $r
             if(failedNames.length) {
                 msg += sprintf('Failed to transfer playlist(s):\n%s', failedNames.join(',\n'));
             }
+            msg +='\nYou may need to login again to your Spotify client to see the results.';
             alert(msg);
-
-            $rootScope.$broadcast('ENABLE_VIEW');
-            checkboxes.clearCache();
         });
     }
 
