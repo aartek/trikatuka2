@@ -1,6 +1,6 @@
 "use strict";
 
-angular.module('trikatuka2').service('PlaylistService', function (Spotify, $q) {
+angular.module('trikatuka2').service('PlaylistService', function (Spotify, $q, RequestHelper) {
     this.loadPlaylists = function(user, params, itemsTransformer){
         return Spotify.get('https://api.spotify.com/v1/me/playlists', user, params).then(function(response){
             return {
@@ -22,6 +22,14 @@ angular.module('trikatuka2').service('PlaylistService', function (Spotify, $q) {
     this.addTracksToPlaylist = function (tracks, user, playlistId) {
         var pages = Math.ceil(tracks.length / 100);
 
+        function Page(data) {
+            this.add = function () {
+                return Spotify.post(url, user, data);
+            }
+        }
+
+        var url = sprintf('https://api.spotify.com/v1/users/%s/playlists/%s/tracks', user.getUserId(), playlistId);
+
         var promises = [];
         for (var i = 0; i < pages; i++) {
             var data = {
@@ -29,11 +37,9 @@ angular.module('trikatuka2').service('PlaylistService', function (Spotify, $q) {
                     return item.track.uri;
                 })
             };
-
-            var url = sprintf('https://api.spotify.com/v1/users/%s/playlists/%s/tracks', user.getUserId(), playlistId);
-            promises.push(Spotify.post(url, user, data))
+            promises.push(new Page(data));
         }
-        return $q.all(promises);
+        return RequestHelper.doAction('add',promises);
     }
 });
 //# sourceURL=PlaylistService.js

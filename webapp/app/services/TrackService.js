@@ -1,6 +1,6 @@
 "use strict";
 
-angular.module('trikatuka2').service('TrackService', function (Spotify, $q) {
+angular.module('trikatuka2').service('TrackService', function (Spotify, $q, RequestHelper, $timeout) {
     this.loadTracks = function(user, params, itemsTransformer){
         return Spotify.get('https://api.spotify.com/v1/me/tracks', user, params).then(function(response){
             return {
@@ -12,17 +12,29 @@ angular.module('trikatuka2').service('TrackService', function (Spotify, $q) {
 
     this.transferAll = function(user, targetUser){
         var deferred = $q.defer();
+
+        var url = 'https://api.spotify.com/v1/me/tracks';
+        function Page(items){
+            this.items = items;
+
+            this.transfer = function () {
+                return Spotify.put(url, targetUser, this.items);
+            }
+        }
+
         getAll(user).then(function(tracks){
             var url = 'https://api.spotify.com/v1/me/tracks';
             var pages = Math.ceil(tracks.length / 50);
-            var promises = [];
+
+            var toTransfer = [];
             for(var i=0; i<pages; i++) {
                 var data  = tracks.slice(i * 50, (i * 50) + 50);
-                promises.push(Spotify.put(url, targetUser, data));
+                toTransfer.push(new Page(data));
             }
-            $q.all(promises).then(function(){
+            return RequestHelper.doAction('transfer',toTransfer).then(function () {
                 deferred.resolve();
             });
+
         });
         return deferred.promise;
     };
@@ -38,21 +50,29 @@ angular.module('trikatuka2').service('TrackService', function (Spotify, $q) {
             var total = response.data.total;
             var tracks = [];
 
+            function Page(params) {
+                this.getItems = function () {
+                    return load(url,user,params)
+                }
+            }
+
             var pages = Math.ceil(total / 50);
-            var promises = [];
+            var pagesToLoad = [];
             for(var i=0; i<pages; i++) {
                 var params = {
                     limit: 50,
                     offset: i*50
                 };
-                promises.push(load(url,user,params));
+                pagesToLoad.push(new Page(params));
             }
-            return $q.all(promises).then(function(results){
-                _.each(results, function(result){
-                    tracks = tracks.concat(result);
+            
+            return RequestHelper.doAction('getItems',pagesToLoad).then(function (result) {
+                _.each(result.success, function (items) {
+                    tracks = tracks.concat(items);
                 });
                 deferred.resolve(tracks);
-            });
+            }); 
+
         });
         return deferred.promise;
     }
