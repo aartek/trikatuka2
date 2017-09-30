@@ -35,7 +35,7 @@ if (process.env.name === 'dev') {
 else {
     server_port = 8080;
     server_ip_address = '0.0.0.0';
-    baseUrl = 'http://trikatuka.aknakn.eu';
+    baseUrl = 'http://www.trikatuka.aknakn.eu';
 }
 
 server.listen(server_port, server_ip_address);
