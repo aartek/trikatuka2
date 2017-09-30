@@ -4,7 +4,6 @@ var bodyParser = require('body-parser');
 var methodOverride = require('method-override');
 var querystring = require('querystring');
 var request = require('request');
-var config = require('config');
 var glob = require("glob");
 var path = require('path');
 // var Base64 = require('js-base64').Base64;

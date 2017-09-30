@@ -358,6 +358,12 @@ angular.module('trikatuka2').factory('Checkboxes', function () {
 //# sourceURL=Checkboxes.js
 "use strict";
 
+angular.module('trikatuka2').factory('mySocket', function (socketFactory) {
+    return socketFactory();
+});
+//# sourceURL=mySocket.js
+"use strict";
+
 angular.module('trikatuka2').factory('Pagination', function () {
     function Pagination() {
         this.limit = 10;
@@ -640,12 +646,6 @@ angular.module('trikatuka2').factory('User', function (mySocket, Spotify, $sessi
 //# sourceURL=User.js
 "use strict";
 
-angular.module('trikatuka2').factory('mySocket', function (socketFactory) {
-    return socketFactory();
-});
-//# sourceURL=mySocket.js
-"use strict";
-
 angular.module('trikatuka2').service('PlaylistService', function (Spotify, $q, RequestHelper) {
     this.loadPlaylists = function(user, params, itemsTransformer){
         return Spotify.get('https://api.spotify.com/v1/me/playlists', user, params).then(function(response){
@@ -854,13 +854,13 @@ angular.module('trikatuka2').service('TrackService', function (Spotify, $q, Requ
                 };
                 pagesToLoad.push(new Page(params));
             }
-
+            
             return RequestHelper.doAction('getItems',pagesToLoad).then(function (result) {
                 _.each(result.success, function (items) {
                     tracks = tracks.concat(items);
                 });
                 deferred.resolve(tracks);
-            });
+            }); 
 
         });
         return deferred.promise;
