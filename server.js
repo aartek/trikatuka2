@@ -35,7 +35,7 @@ if (process.env.name === 'dev') {
 else {
     server_port = 8080;
     server_ip_address = '0.0.0.0';
-    baseUrl = 'http://trikatuka-aknakn.rhcloud.com';
+    baseUrl = 'http://trikatuka.aknakn.eu';
 }
 
 server.listen(server_port, server_ip_address);
@@ -56,7 +56,6 @@ io.on('connection', function (socket) {
 
         var params = querystring.stringify({
             show_dialog: true,
-            //client_secret: CLIENT_SECRET,
             client_id: CLIENT_ID,
             response_type: 'code',
             redirect_uri: redirectUri,
@@ -139,7 +138,6 @@ function processAuthCallback(req, res, body, success) {
     var socketId = split[0];
     var signingProccessId = split[1];
     body.signingProccessId = signingProccessId;
-    console.log(`Login for socket ${socketId} signingProcessId ${signingProccessId} success?: ${success}`)
     io.to(socketId).emit(success ? 'user_logged_in' : 'user_not_logged_in', body);
     res.redirect('afterLogin');
 }
