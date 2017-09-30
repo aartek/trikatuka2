@@ -9,9 +9,8 @@ var glob = require("glob");
 var path = require('path');
 // var Base64 = require('js-base64').Base64;
 
-
-var CLIENT_ID = config.get('CLIENT_ID');
-var CLIENT_SECRET = config.get('CLIENT_SECRET');
+var CLIENT_ID = process.env.CLIENT_ID;
+var CLIENT_SECRET = process.env.CLIENT_SECRET;
 
 var app = express();
 var server = require('http').createServer(app);
