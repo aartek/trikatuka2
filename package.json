@@ -4,9 +4,10 @@
   "dependencies": {
     "body-parser": "~1.0.0",
     "config": "^1.19.0",
-    "express": "^4.13.4",
+    "express": "^4.15.4",
     "glob": "^7.0.3",
     "http": "0.0.0",
+    "js-base64": "^2.3.2",
     "method-override": "~1.0.0",
     "morgan": "~1.0.0",
     "path": "^0.12.7",

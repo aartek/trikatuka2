@@ -2,11 +2,16 @@ var app = angular.module('trikatuka2', ['ngRoute', 'ngResource', 'btford.socket-
 
 angular.module('trikatuka2').config(function ($routeProvider) {
     $routeProvider.when('/', {
-        controller: 'MainCtrl as  mainVM',
-        templateUrl: 'partials/main.html'
-    }).otherwise({
-        redirectTo: '/'
-    });
+            controller: 'MainCtrl as  mainVM',
+            templateUrl: 'partials/main.html'
+        })
+        .when('/help', {
+            controller: 'HelpCtrl',
+            templateUrl: 'partials/help.html'
+        })
+        .otherwise({
+            redirectTo: '/'
+        });
 });
 
 angular.module('trikatuka2').run(function ($sessionStorage, users, User) {
@@ -51,7 +56,8 @@ angular.module('trikatuka2').controller('MainCtrl', function ($scope, users){
 //# sourceURL=MainCtrl.js
 "use strict";
 
-angular.module('trikatuka2').controller('PlaylistListCtrl', function ($scope, $resource, users, Spotify, Pagination, Checkboxes, PlaylistService, Playlist, $rootScope, $q) {
+angular.module('trikatuka2').controller('PlaylistListCtrl', function ($scope, $resource, users, Spotify, Pagination,
+    Checkboxes, PlaylistService, Playlist, $rootScope, $q, RequestHelper) {
 
     var pagination = $scope.pagination = new Pagination();
     pagination.setChangeCallback(load);
@@ -101,30 +107,24 @@ angular.module('trikatuka2').controller('PlaylistListCtrl', function ($scope, $r
         if(!confirmed){
             return;
         }
-        var items = checkboxes.cache;
+        var items = _.toArray(checkboxes.cache);
         transfer(items);
     };
 
     function transfer(items){
         $rootScope.$broadcast('DISABLE_VIEW');
-        var promises = [];
 
-        _.each(items, function (item) {
-            promises.push(item.transfer(users.user2));
-        });
-
-        $q.all(promises).then(function (results) {
-            var successNames = _.chain(results).filter(function (item) {
-                return item.success;
-            }).map(function (item) {
+        RequestHelper.doAction('transfer', items, [users.user2]).then(function (result) {
+            var successNames = _.map(result.success, function (item) {
                 return item.playlist.name
-            }).value();
+            });
 
-            var failedNames = _.chain(results).filter(function (item) {
-                return !item.success;
-            }).map(function (item) {
+            var failedNames = _.map(result.fail, function (item) {
                 return item.playlist.name
-            }).value();
+            });
+
+            $rootScope.$broadcast('ENABLE_VIEW');
+            checkboxes.clearCache();
 
             var msg = '';
             if(successNames.length) {
@@ -133,10 +133,8 @@ angular.module('trikatuka2').controller('PlaylistListCtrl', function ($scope, $r
             if(failedNames.length) {
                 msg += sprintf('Failed to transfer playlist(s):\n%s', failedNames.join(',\n'));
             }
+            msg +='\nYou may need to login again to your Spotify client to see the results.';
             alert(msg);
-
-            $rootScope.$broadcast('ENABLE_VIEW');
-            checkboxes.clearCache();
         });
     }
 
@@ -648,7 +646,7 @@ angular.module('trikatuka2').factory('mySocket', function (socketFactory) {
 //# sourceURL=mySocket.js
 "use strict";
 
-angular.module('trikatuka2').service('PlaylistService', function (Spotify, $q) {
+angular.module('trikatuka2').service('PlaylistService', function (Spotify, $q, RequestHelper) {
     this.loadPlaylists = function(user, params, itemsTransformer){
         return Spotify.get('https://api.spotify.com/v1/me/playlists', user, params).then(function(response){
             return {
@@ -670,6 +668,14 @@ angular.module('trikatuka2').service('PlaylistService', function (Spotify, $q) {
     this.addTracksToPlaylist = function (tracks, user, playlistId) {
         var pages = Math.ceil(tracks.length / 100);
 
+        function Page(data) {
+            this.add = function () {
+                return Spotify.post(url, user, data);
+            }
+        }
+
+        var url = sprintf('https://api.spotify.com/v1/users/%s/playlists/%s/tracks', user.getUserId(), playlistId);
+
         var promises = [];
         for (var i = 0; i < pages; i++) {
             var data = {
@@ -677,14 +683,44 @@ angular.module('trikatuka2').service('PlaylistService', function (Spotify, $q) {
                     return item.track.uri;
                 })
             };
-
-            var url = sprintf('https://api.spotify.com/v1/users/%s/playlists/%s/tracks', user.getUserId(), playlistId);
-            promises.push(Spotify.post(url, user, data))
+            promises.push(new Page(data));
         }
-        return $q.all(promises);
+        return RequestHelper.doAction('add',promises);
     }
 });
 //# sourceURL=PlaylistService.js
+'use strict';
+
+angular.module('trikatuka2').service('RequestHelper', function ($q) {
+
+    this.doAction = function (actionName, items, args) {
+        var deferred = $q.defer();
+        var ret = {
+            success: [],
+            fail: []
+        };
+        var process = function (index){
+            if(items[index]) {
+                return items[index][actionName].apply(items[index], args)
+                    .then(function (result) {
+                        ret.success.push(result);
+                    }, function (result) {
+                        ret.fail.push(result)
+                    })
+                    ['finally'](function () {
+                        return process(index+1);
+                    });
+            }
+            else {
+                deferred.resolve(ret)
+            }
+        };
+        process(0);
+        return deferred.promise
+    }
+
+});
+
 "use strict";
 
 angular.module('trikatuka2').service('Spotify', function ($http, $q) {
@@ -753,7 +789,7 @@ angular.module('trikatuka2').service('Spotify', function ($http, $q) {
 //# sourceURL=Spotify.js
 "use strict";
 
-angular.module('trikatuka2').service('TrackService', function (Spotify, $q) {
+angular.module('trikatuka2').service('TrackService', function (Spotify, $q, RequestHelper, $timeout) {
     this.loadTracks = function(user, params, itemsTransformer){
         return Spotify.get('https://api.spotify.com/v1/me/tracks', user, params).then(function(response){
             return {
@@ -765,17 +801,29 @@ angular.module('trikatuka2').service('TrackService', function (Spotify, $q) {
 
     this.transferAll = function(user, targetUser){
         var deferred = $q.defer();
+
+        var url = 'https://api.spotify.com/v1/me/tracks';
+        function Page(items){
+            this.items = items;
+
+            this.transfer = function () {
+                return Spotify.put(url, targetUser, this.items);
+            }
+        }
+
         getAll(user).then(function(tracks){
             var url = 'https://api.spotify.com/v1/me/tracks';
             var pages = Math.ceil(tracks.length / 50);
-            var promises = [];
+
+            var toTransfer = [];
             for(var i=0; i<pages; i++) {
                 var data  = tracks.slice(i * 50, (i * 50) + 50);
-                promises.push(Spotify.put(url, targetUser, data));
+                toTransfer.push(new Page(data));
             }
-            $q.all(promises).then(function(){
+            return RequestHelper.doAction('transfer',toTransfer).then(function () {
                 deferred.resolve();
             });
+
         });
         return deferred.promise;
     };
@@ -791,21 +839,29 @@ angular.module('trikatuka2').service('TrackService', function (Spotify, $q) {
             var total = response.data.total;
             var tracks = [];
 
+            function Page(params) {
+                this.getItems = function () {
+                    return load(url,user,params)
+                }
+            }
+
             var pages = Math.ceil(total / 50);
-            var promises = [];
+            var pagesToLoad = [];
             for(var i=0; i<pages; i++) {
                 var params = {
                     limit: 50,
                     offset: i*50
                 };
-                promises.push(load(url,user,params));
+                pagesToLoad.push(new Page(params));
             }
-            return $q.all(promises).then(function(results){
-                _.each(results, function(result){
-                    tracks = tracks.concat(result);
+
+            return RequestHelper.doAction('getItems',pagesToLoad).then(function (result) {
+                _.each(result.success, function (items) {
+                    tracks = tracks.concat(items);
                 });
                 deferred.resolve(tracks);
             });
+
         });
         return deferred.promise;
     }

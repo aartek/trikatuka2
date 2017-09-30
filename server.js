@@ -7,6 +7,8 @@ var request = require('request');
 var config = require('config');
 var glob = require("glob");
 var path = require('path');
+// var Base64 = require('js-base64').Base64;
+
 
 var CLIENT_ID = config.get('CLIENT_ID');
 var CLIENT_SECRET = config.get('CLIENT_SECRET');
@@ -15,7 +17,7 @@ var app = express();
 var server = require('http').createServer(app);
 var io = require('socket.io').listen(server);
 
-var webappDir = path.join(__dirname,'/webapp/');
+var webappDir = path.join(__dirname, '/webapp/');
 
 app.use(express.static(webappDir));     // set the static files location /public/img will be /img for users
 app.use(morgan('dev'));                     // log every request to the console
@@ -23,21 +25,18 @@ app.use(bodyParser.urlencoded({extended: false}));    // parse application/x-www
 app.use(bodyParser.json());    // parse application/json
 app.use(methodOverride());                  // simulate DELETE and PUT
 
-var CLIENT_ID = '27edb2ed1e2c4c5c8cd7e192c81e37e8';
-var CLIENT_SECRET = '42b742637adb4c22bb3577d802685545';
-
 var server_port,
     server_ip_address,
     baseUrl;
 
-if(process.env.name === 'dev'){
+if (process.env.name === 'dev') {
     server_port = 7878;
     server_ip_address = 'localhost';
     baseUrl = 'http://localhost:7878'
 }
 else {
-    server_port = process.env.OPENSHIFT_NODEJS_PORT || 8080;
-    server_ip_address = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1';
+    server_port = 8080;
+    server_ip_address = '0.0.0.0';
     baseUrl = 'http://trikatuka-aknakn.rhcloud.com';
 }
 
@@ -46,7 +45,7 @@ console.log('Magic happens on port ' + server_port);
 
 
 io.on('connection', function (socket) {
-    socket.on('login', function(processId, callback){
+    socket.on('login', function (processId, callback) {
 
         var redirectUri = baseUrl + '/user_auth_callback';
         var privileges = ['user-library-read',
@@ -59,7 +58,7 @@ io.on('connection', function (socket) {
 
         var params = querystring.stringify({
             show_dialog: true,
-            client_secret: CLIENT_SECRET,
+            //client_secret: CLIENT_SECRET,
             client_id: CLIENT_ID,
             response_type: 'code',
             redirect_uri: redirectUri,
@@ -70,7 +69,7 @@ io.on('connection', function (socket) {
         callback(url);
     });
 
-    socket.on('refreshToken', function(refreshToken, callback){
+    socket.on('refreshToken', function (refreshToken, callback) {
         var payload = {
             grant_type: 'refresh_token',
             refresh_token: refreshToken
@@ -83,20 +82,20 @@ io.on('connection', function (socket) {
             headers: headers,
             form: payload,
             json: true
-        }, function(error, response, body){
+        }, function (error, response, body) {
             callback(body);
         });
     });
 });
 
-app.route('/afterLogin').get(function(req, res){
-    res.sendFile(path.join(webappDir,'afterLogin.html'));
+app.route('/afterLogin').get(function (req, res) {
+    res.sendFile(path.join(webappDir, 'afterLogin.html'));
 });
 
 app.route('/user_auth_callback')
     .get(function (req, res) {
         if (req.query.error) {
-            processAuthCallback(req, res,{},false);
+            processAuthCallback(req, res, {}, false);
             return;
         }
 
@@ -121,8 +120,8 @@ app.route('/user_auth_callback')
     });
 
 app.route('/files')
-    .get(function(req, res){
-        if(process.env.name === 'dev') {
+    .get(function (req, res) {
+        if (process.env.name === 'dev') {
             var files = glob.sync(path.join(webappDir, 'app/**/*.js'));
             var result = [];
             var filter = webappDir.replace(/\\/g, '/');
@@ -131,18 +130,18 @@ app.route('/files')
             });
             res.json(result);
         }
-        else{
+        else {
             res.json(['dist/app.min.js']);
         }
 
     });
 
-function processAuthCallback(req, res, body, success){
+function processAuthCallback(req, res, body, success) {
     var split = req.query.state.split(':');
     var socketId = split[0];
     var signingProccessId = split[1];
     body.signingProccessId = signingProccessId;
-    io.to('/#'+socketId).emit(success ? 'user_logged_in' : 'user_not_logged_in', body);
+    io.to('/#' + socketId).emit(success ? 'user_logged_in' : 'user_not_logged_in', body);
     res.redirect('afterLogin');
 }
 
