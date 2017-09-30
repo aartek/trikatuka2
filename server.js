@@ -139,6 +139,7 @@ function processAuthCallback(req, res, body, success) {
     var socketId = split[0];
     var signingProccessId = split[1];
     body.signingProccessId = signingProccessId;
+    console.log(`Login for socket ${socketId} signingProcessId ${signingProccessId} success?: ${success}`)
     io.to(socketId).emit(success ? 'user_logged_in' : 'user_not_logged_in', body);
     res.redirect('afterLogin');
 }
