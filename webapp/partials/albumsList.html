@@ -1,0 +1,35 @@
+<div class="uk-width-1-1">
+    <div class="uk-width-1-1 uk-margin-small-bottom">
+        <button class="uk-button uk-button-success" ng-click="transferAll()" ng-disabled="mainVM.viewDisabled || !items || !items.length || !mainVM.user1.authData || !mainVM.user2.authData" title="Transfers your all saved albums"><i class="uk-icon-send uk-margin-small-right"></i>Transfer all</button>
+        <i class="uk-icon-spinner uk-icon-spin" ng-show="mainVM.viewDisabled"></i>
+    </div>
+    <div class="uk-width-1-1">
+        <div class="uk-float-right uk-margin-small-bottom">
+            <button class="uk-button uk-button-primary" ng-click="pagination.prevPage()" ng-disabled="mainVM.viewDisabled || pagination.prevDisabled"><i class="uk-icon-arrow-left"></i></button>
+            <button class="uk-button uk-button-primary" ng-click="pagination.nextPage()" ng-disabled="mainVM.viewDisabled || pagination.nextDisabled"><i class="uk-icon-arrow-right"></i></button>
+        </div>
+        <table class="uk-table uk-table-striped uk-table-hover">
+            <tr>
+                <th>#</th>
+                <th>Title</th>
+                <th>Artist</th>
+                <th>Tracks</th>
+            </tr>
+            <tr ng-repeat="item in items">
+                <td>{{pagination.offset + $index + 1}}.</td>
+                <td>{{item.name}}</td>
+                <td><span ng-repeat="artist in item.artists">{{artist.name}}<span ng-hide="$last">, </span></span></td>
+                <td>{{item.trackcounts}}</td>
+            </tr>
+        </table>
+        <div ng-show="!items || !items.length" class="uk-text-muted uk-text-center">
+            <h1 class="uk-text-muted"><i class="uk-icon-inbox"></i></h1>
+            <span>No items.</span>
+        </div>
+        <div class="uk-float-right">
+            <button class="uk-button uk-button-primary" ng-click="pagination.prevPage()" ng-disabled="mainVM.viewDisabled || pagination.prevDisabled"><i class="uk-icon-arrow-left"></i></button>
+            <button class="uk-button uk-button-primary" ng-click="pagination.nextPage()" ng-disabled="mainVM.viewDisabled || pagination.nextDisabled"><i class="uk-icon-arrow-right"></i></button>
+        </div>
+        <span ng-hide="!items || items.length===0"><i>Page {{pagination.currentPage}} of {{pagination.pages}}</i></span>
+    </div>
+</div>

@@ -2,10 +2,12 @@
     <ul class="uk-tab" data-uk-tab="{connect:'#my-id'}">
         <li><a href=""><i class="uk-icon-list uk-margin-small-right"></i>Playlists</a></li>
         <li><a href=""><i class="uk-icon-music uk-margin-small-right"></i>Tracks</a></li>
+        <li><a href=""><i class="uk-icon-music uk-margin-small-right"></i>Albums</a></li>
     </ul>
     <ul id="my-id" class="uk-switcher uk-margin">
         <li><div ng-include="'partials/playlistList.html'" ng-controller="PlaylistListCtrl"></div></li>
         <li><div ng-include="'partials/tracksList.html'" ng-controller="TrackListCtrl"></div></li>
+        <li><div ng-include="'partials/albumsList.html'" ng-controller="AlbumListCtrl"></div></li>
     </ul>
 
 </div>
