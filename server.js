@@ -52,7 +52,8 @@ io.on('connection', function (socket) {
             'playlist-read-collaborative',
             'playlist-modify-public',
             'playlist-modify-private',
-            'user-follow-read'].join('%20');
+            'user-follow-read',
+            'user-follow-modify'].join('%20');
 
         var params = querystring.stringify({
             show_dialog: true,

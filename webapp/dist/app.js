@@ -78,6 +78,61 @@ angular.module('trikatuka2').controller('AlbumListCtrl', function ($scope, $reso
     //# sourceURL=AlbumListCtrl.js
 "use strict";
 
+angular.module('trikatuka2').controller('ArtistListCtrl', function ($scope, $resource, users, Spotify, Pagination,
+    Checkboxes, ArtistService, Artist, $rootScope, $q, RequestHelper) {
+
+
+        var pagination = $scope.pagination = new Pagination();
+        pagination.setChangeCallback(load);
+    
+        function loadArtists(params){
+            return ArtistService.loadArtists(users.user1, params, transformer);
+        }
+    
+        function load() {
+            loadArtists(pagination.getParams()).then(function (artists) {
+                $scope.items = artists.items;
+                pagination.updateTotal(artists.total);
+            });
+        }
+    
+        function transformer(item) {
+            return new Artist(item, users.user1);
+        }
+    
+        $scope.transferAll = function(){
+            var confirmed = confirm('Are you sure you want to transfer all artists?');
+            if(!confirmed){
+                return;
+            }
+            $rootScope.$broadcast('DISABLE_VIEW');
+            ArtistService.transferAll(users.user1, users.user2).then(function(){
+                alert('Transfering artists done.\n\nYou may need to login again to your Spotify client to see the results.');
+                $rootScope.$broadcast('ENABLE_VIEW');
+            });
+    
+        };
+    
+        if (users.user1.authData) {
+            load();
+        }
+    
+        $scope.$on('USER_LOGGED_IN', function (event, user) {
+            if (user.id === 'user1') {
+                load();
+            }
+        });
+    
+        $scope.$on('USER_LOGGED_OUT', function (event, user) {
+            if (user.id === 'user1') {
+                $scope.items = null;
+                pagination.updateTotal(0);
+            }
+        });
+    });
+    //# sourceURL=ArtistListCtrl.js
+"use strict";
+
 angular.module('trikatuka2').controller('LoginCtrl', function ($scope, users) {
     $scope.user1 = users.user1;
     $scope.user2 = users.user2;
@@ -364,6 +419,23 @@ angular.module('trikatuka2').factory('Album', function(Spotify ,$q, AlbumService
 
 });
 //# sourceURL=Album.js
+"use strict";
+
+angular.module('trikatuka2').factory('Artist', function(Spotify ,$q, ArtistService){
+    this.playlistId = null;
+    this.name = null;
+
+    function Artist(artist, user){
+        var self = this;
+        self.id = artist.id;
+        self.name = artist.name;
+        self.user = user;
+    }
+
+    return Artist;
+
+});
+//# sourceURL=Artist.js
 "use strict";
 
 angular.module('trikatuka2').factory('Checkboxes', function () {
@@ -810,6 +882,98 @@ angular.module('trikatuka2').service('AlbumService', function (Spotify, $q, Requ
     }
 });
 //# sourceURL=AlbumService.js
+"use strict";
+
+angular.module('trikatuka2').service('ArtistService', function (Spotify, $q, RequestHelper, $timeout) {
+    this.loadArtists = function(user, params, itemsTransformer){
+        return Spotify.get('https://api.spotify.com/v1/me/following?type=artist', user, params).then(function(response){    
+            return {
+                items: itemsTransformer ? _.map(response.data.artists.items, itemsTransformer) : response.data.artists.items,
+                total: response.data.artists.total
+            }
+        });
+    };
+
+    this.transferAll = function(user, targetUser){
+        var deferred = $q.defer();
+
+        var url = 'https://api.spotify.com/v1/me/following?type=artist';
+        function Page(items){
+            this.items = items;
+            
+            this.transfer = function () {
+                return Spotify.put(url, targetUser, this.items);
+            }
+        }
+
+        getAll(user).then(function(artists){
+            var url = 'https://api.spotify.com/v1/me/following?type=artist';
+            var pages = Math.ceil(artists.length / 50);
+
+            var toTransfer = [];
+            for(var i=0; i<pages; i++) {
+                var data  = artists.slice(i * 50, (i * 50) + 50);
+                toTransfer.push(new Page(data));
+            }
+            return RequestHelper.doAction('transfer',toTransfer).then(function () {
+                deferred.resolve();
+            });
+
+        });
+        return deferred.promise;
+    };
+
+    function getAll(user){
+        var deferred = $q.defer();
+        var url = 'https://api.spotify.com/v1/me/following?type=artist';
+        var params = {
+            limit: 1,
+            offset: 0
+        };
+        Spotify.get(url, user, params).then(function(response){
+            var total = response.data.artists.total;
+            var artists = [];
+
+            function Page(params) {
+                this.getItems = function () {
+                    return load(url,user,params)
+                }
+            }
+
+            var pages = Math.ceil(total / 50);
+            var pagesToLoad = [];
+            for(var i=0; i<pages; i++) {
+                var params = {
+                    limit: 50,
+                    offset: i*50
+                };
+                pagesToLoad.push(new Page(params));
+            }
+            
+            return RequestHelper.doAction('getItems',pagesToLoad).then(function (result) {
+                _.each(result.success, function (items) {
+                    artists = artists.concat(items);
+                });
+                deferred.resolve(artists);
+            }); 
+
+        });
+        return deferred.promise;
+    }
+
+    function load(url, user, params){
+        return Spotify.get(url, user, params).then(function(response){
+            return getIds(response.data.artists.items);
+        });
+    }
+
+    function getIds(items){
+        return _.map(items, function(item){
+            return item.id;
+        });
+    }
+});
+//# sourceURL=ArtistService.js
 "use strict";
 
 angular.module('trikatuka2').service('PlaylistService', function (Spotify, $q, RequestHelper) {
