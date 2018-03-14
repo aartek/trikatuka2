@@ -91,29 +91,35 @@ app.route('/afterLogin').get(function (req, res) {
 
 app.route('/user_auth_callback')
     .get(function (req, res) {
-        if (req.query.error) {
-            processAuthCallback(req, res, {}, false);
-            return;
+        try {
+            if (req.query.error) {
+                processAuthCallback(req, res, {}, false);
+                return;
+            }
+
+            var authorization = Base64.encode(CLIENT_ID + ':' + CLIENT_SECRET);
+            var payload = {
+                grant_type: 'authorization_code',
+                code: req.query.code,
+                redirect_uri: baseUrl + '/user_auth_callback'
+            };
+            var headers = {'Authorization': 'Basic ' + authorization};
+            var url = 'https://accounts.spotify.com/api/token';
+
+            request({
+                url: url,
+                headers: headers,
+                form: payload,
+                method: 'POST',
+                json: true
+            }, function (error, response, body) {
+                processAuthCallback(req, res, body, true);
+            });
         }
-
-        var authorization = Base64.encode(CLIENT_ID + ':' + CLIENT_SECRET);
-        var payload = {
-            grant_type: 'authorization_code',
-            code: req.query.code,
-            redirect_uri: baseUrl + '/user_auth_callback'
-        };
-        var headers = {'Authorization': 'Basic ' + authorization};
-        var url = 'https://accounts.spotify.com/api/token';
-
-        request({
-            url: url,
-            headers: headers,
-            form: payload,
-            method: 'POST',
-            json: true
-        }, function (error, response, body) {
-            processAuthCallback(req, res, body, true);
-        });
+        catch (err) {
+            console.error('Auth error', err, 'Request query:', req.query);
+            res.sendStatus(500);
+        }
     });
 
 app.route('/files')
