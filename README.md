@@ -1,4 +1,4 @@
-#Trikatuka - Spotify migration tool
+# Trikatuka - Spotify migration tool
 
 **Trikatuka** is a tool helping transfer Spotify playlists and saved tracks from one account to another.
 
@@ -6,10 +6,11 @@
 - *Public* and *private* playlists are copied.
 - Subscribed playlists are followed.
 
-Production app is available here: http://trikatuka.aknakn.eu
+**Production app is available here:** http://trikatuka.aknakn.eu
+
 How to: http://aknowakowski.blogspot.com/p/trikatuka2.html
 
-##For developers
+## For developers
 
 Project is based on `Node.js` and `AngularJS 1.5`
 
@@ -22,7 +23,7 @@ You need to create an app on https://developer.spotify.com/ and get `clientId` a
 - Navigate to `http://localhost:7878`
 
 
-##Changelog
+## Changelog
 ###2.3
 - Fixed moving playlists. Now requests are made one by one, because posting multiple requests simultaneously caused 500 errors.
 - Added "Help" page
