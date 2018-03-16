@@ -24,6 +24,6 @@ You need to create an app on https://developer.spotify.com/ and get `clientId` a
 
 
 ## Changelog
-###2.3
+### 2.3
 - Fixed moving playlists. Now requests are made one by one, because posting multiple requests simultaneously caused 500 errors.
 - Added "Help" page
