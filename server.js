@@ -140,10 +140,16 @@ app.route('/files')
     });
 
 function processAuthCallback(req, res, body, success) {
-    var split = req.query.state.split(':');
-    var socketId = split[0];
-    var signingProccessId = split[1];
-    body.signingProccessId = signingProccessId;
-    io.to(socketId).emit(success ? 'user_logged_in' : 'user_not_logged_in', body);
-    res.redirect('afterLogin');
+    try {
+        var split = req.query.state.split(':');
+        var socketId = split[0];
+        var signingProccessId = split[1];
+        body.signingProccessId = signingProccessId;
+        io.to(socketId).emit(success ? 'user_logged_in' : 'user_not_logged_in', body);
+        res.redirect('afterLogin');
+    }
+    catch (err){
+        console.error(err);
+        res.status(500).send("Internal server error occurred")
+    }
 }
