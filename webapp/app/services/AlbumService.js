@@ -23,7 +23,6 @@ angular.module('trikatuka2').service('AlbumService', function (Spotify, $q, Requ
         }
 
         getAll(user).then(function(albums){
-            var url = 'https://api.spotify.com/v1/me/albums';
             var pages = Math.ceil(albums.length / 50);
 
             var toTransfer = [];

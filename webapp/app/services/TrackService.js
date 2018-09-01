@@ -23,7 +23,6 @@ angular.module('trikatuka2').service('TrackService', function (Spotify, $q, Requ
         }
 
         getAll(user).then(function(tracks){
-            var url = 'https://api.spotify.com/v1/me/tracks';
             var pages = Math.ceil(tracks.length / 50);
 
             var toTransfer = [];

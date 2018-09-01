@@ -17,10 +17,11 @@ Project is based on `Node.js` and `AngularJS 1.5`
 You need to create an app on https://developer.spotify.com/ and get `clientId` and `clientSecret`. You must also add `http://localhost:<PORT>/user_auth_callback` to the urls whitelist.
 
 **How to run**
-- set enviromental variables
+- set env variables
   - `CLIENT_ID=<clientId>`
   - `CLIENT_SECRET=<clientSecret>`
   - `TRIKATUKA_PORT=<port>`
+  - Optionally set `NODE_ENV=dev` if you want to run app in development mode (for debuggable angular app's sources)
 - `npm install`
 - `npm run build`
 - `node server.js`

@@ -118,7 +118,7 @@ app.route('/user_auth_callback')
 
 app.route('/files')
     .get(function (req, res) {
-        if (process.env.name === 'dev') {
+        if (process.env.NODE_ENV === 'dev') {
             var files = glob.sync(path.join(webappDir, 'app/**/*.js'));
             var result = [];
             var filter = webappDir.replace(/\\/g, '/');

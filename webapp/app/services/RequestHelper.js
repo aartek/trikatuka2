@@ -8,17 +8,20 @@ angular.module('trikatuka2').service('RequestHelper', function ($q) {
             success: [],
             fail: []
         };
-        var process = function (index){
-            if(items[index]) {
-                return items[index][actionName].apply(items[index], args)
+        var lastResult;
+        var process = function (index, previousResult) {
+            if (items[index]) {
+                return items[index][actionName].apply(items[index], (args || []).concat(previousResult))
                     .then(function (result) {
+                        lastResult = result;
                         ret.success.push(result);
                     }, function (result) {
+                        lastResult = result
                         ret.fail.push(result)
                     })
                     ['finally'](function () {
-                        return process(index+1);
-                    });
+                    return process(index + 1, lastResult);
+                });
             }
             else {
                 deferred.resolve(ret)
@@ -29,3 +32,4 @@ angular.module('trikatuka2').service('RequestHelper', function ($q) {
     }
 
 });
+//# sourceURL=RequestHelper.js
