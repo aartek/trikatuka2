@@ -45,6 +45,9 @@ docker run -d --net host --name trikatuka2 --restart unless-stopped \
 (`--net host` is required. Otherwise socket.io won't work correctly.)
 
 ## Changelog
+### 2.4
+- Added support for transfering albums and playlists.
+
 ### 2.3
 - Fixed moving playlists. Now requests are made one by one, because posting multiple requests simultaneously caused 500 errors.
 - Added "Help" page
