@@ -23,20 +23,8 @@ app.use(bodyParser.urlencoded({extended: false}));    // parse application/x-www
 app.use(bodyParser.json());    // parse application/json
 app.use(methodOverride());                  // simulate DELETE and PUT
 
-var server_port,
-    server_ip_address,
-    baseUrl;
-
-if (process.env.name === 'dev') {
-    server_port = 7878;
-    server_ip_address = 'localhost';
-    baseUrl = 'http://localhost:7878'
-}
-else {
-    server_port = process.env.TRIKATUKA_PORT || 8080;
+var server_port = process.env.TRIKATUKA_PORT || 8080,
     server_ip_address = '0.0.0.0';
-    baseUrl = 'http://www.trikatuka.aknakn.eu';
-}
 
 server.listen(server_port, server_ip_address);
 console.log('Magic happens on port ' + server_port);
@@ -44,8 +32,10 @@ console.log('Magic happens on port ' + server_port);
 
 io.on('connection', function (socket) {
     socket.on('login', function (processId, callback) {
+        var host = socket.handshake.headers.host;
+        var protocol = socket.secure ? 'https://' : 'http://';
+        var redirectUri = protocol + host + '/user_auth_callback';
 
-        var redirectUri = baseUrl + '/user_auth_callback';
         var privileges = ['user-library-read',
             'user-library-modify',
             'playlist-read-private',
@@ -92,29 +82,38 @@ app.route('/afterLogin').get(function (req, res) {
 
 app.route('/user_auth_callback')
     .get(function (req, res) {
-        if (req.query.error) {
-            processAuthCallback(req, res, {}, false);
-            return;
+        try {
+            if (req.query.error) {
+                processAuthCallback(req, res, {}, false);
+                return;
+            }
+
+            var protocol = req.secure ? 'https://' : 'http://'
+            var host = req.headers.host
+
+            var authorization = Base64.encode(CLIENT_ID + ':' + CLIENT_SECRET);
+            var payload = {
+                grant_type: 'authorization_code',
+                code: req.query.code,
+                redirect_uri: protocol + host + '/user_auth_callback'
+            };
+            var headers = {'Authorization': 'Basic ' + authorization};
+            var url = 'https://accounts.spotify.com/api/token';
+
+            request({
+                url: url,
+                headers: headers,
+                form: payload,
+                method: 'POST',
+                json: true
+            }, function (error, response, body) {
+                processAuthCallback(req, res, body, true);
+            });
         }
-
-        var authorization = Base64.encode(CLIENT_ID + ':' + CLIENT_SECRET);
-        var payload = {
-            grant_type: 'authorization_code',
-            code: req.query.code,
-            redirect_uri: baseUrl + '/user_auth_callback'
-        };
-        var headers = {'Authorization': 'Basic ' + authorization};
-        var url = 'https://accounts.spotify.com/api/token';
-
-        request({
-            url: url,
-            headers: headers,
-            form: payload,
-            method: 'POST',
-            json: true
-        }, function (error, response, body) {
-            processAuthCallback(req, res, body, true);
-        });
+        catch (err) {
+            console.error('Auth error', err, 'Request query:', req.query);
+            res.sendStatus(500);
+        }
     });
 
 app.route('/files')
@@ -135,10 +134,16 @@ app.route('/files')
     });
 
 function processAuthCallback(req, res, body, success) {
-    var split = req.query.state.split(':');
-    var socketId = split[0];
-    var signingProccessId = split[1];
-    body.signingProccessId = signingProccessId;
-    io.to(socketId).emit(success ? 'user_logged_in' : 'user_not_logged_in', body);
-    res.redirect('afterLogin');
+    try {
+        var split = req.query.state.split(':');
+        var socketId = split[0];
+        var signingProccessId = split[1];
+        body.signingProccessId = signingProccessId;
+        io.to(socketId).emit(success ? 'user_logged_in' : 'user_not_logged_in', body);
+        res.redirect('afterLogin');
+    }
+    catch (err) {
+        console.error(err);
+        res.status(500).send("Internal server error occurred")
+    }
 }
