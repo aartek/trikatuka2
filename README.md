@@ -31,7 +31,7 @@ You need to create an app on https://developer.spotify.com/ and get `clientId` a
 
 Build image
 ```
-docker buidocker build . -t trikatuka2
+docker build . -t trikatuka2
 ```
 
 Run
