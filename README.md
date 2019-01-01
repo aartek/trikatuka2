@@ -31,12 +31,12 @@ You need to create an app on https://developer.spotify.com/ and get `clientId` a
 
 Build image
 ```
-docker build . -t trikatuka2
+docker build -t trikatuka2 .
 ```
 
 Run
 ```
-docker run -d --net host --name trikatuka2 --restart unless-stopped \
+docker run -d --network host --name trikatuka2 --restart unless-stopped \
                          -e CLIENT_ID='xxxx' \
                          -e CLIENT_SECRET=xxxx \
                          -e TRIKATUKA_PORT=<PORT> \
@@ -45,6 +45,9 @@ docker run -d --net host --name trikatuka2 --restart unless-stopped \
 (`--net host` is required. Otherwise socket.io won't work correctly.)
 
 ## Changelog
+### 2.5
+- Transfer playlists in the same order
+
 ### 2.4
 - Added support for transfering albums and playlists.
 
