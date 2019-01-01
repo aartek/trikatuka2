@@ -42,7 +42,7 @@ angular.module('trikatuka2').controller('PlaylistListCtrl', function ($scope, $r
         }
 
         $q.all(collectingPlaylistsPromises).then(function(){
-            transfer(playlists);
+            transfer(playlists.reverse());
         });
     };
 

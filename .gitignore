@@ -39,3 +39,5 @@ config/default.json
 
 envs
 tmp
+
+webapp/dist/
