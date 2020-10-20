@@ -4,46 +4,51 @@
     <meta charset="UTF-8">
     <title>Trikatuka - Spotify migration tool</title>
 
-    <script src="dist/libs.min.js"></script>
+    <script>
+        const jQuery = require('jquery')
+        window.$ = window.jQuery = jQuery
+    </script>
+
     <link rel="stylesheet" href="css/uikit.min.css">
+    <script src="../webapp/js/jquery-2.2.1.min.js"></script>
+    <script src="../webapp/js/uikit.min.js"></script>
+    <script src="../webapp/js/angular.min.js"></script>
+    <script src="../webapp/js/angular-resource.min.js"></script>
+    <script src="../webapp/js/angular-route.min.js"></script>
+    <script src="../webapp/js/ngStorage.min.js"></script>
+    <script src="../webapp/js/underscore-min.js"></script>
+
 
     <style>
-        .tr-panel-box-title{
+        .tr-panel-box-title {
             position: absolute;
             bottom: 0px;
             right: 5px;
         }
-        .uk-tab>li>a,
-        .uk-tab>li>a:hover{
+
+        .uk-tab > li > a,
+        .uk-tab > li > a:hover {
             color: #444;
         }
-        .uk-navbar-brand a{
-            color:white;
+
+        .uk-navbar-brand a {
+            color: white;
             text-decoration: none;
         }
-        .tr-help:hover{
+
+        .tr-help:hover {
             color: #bbb;
         }
     </style>
-
-    <script>
-        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-                    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-                m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
-        ga('create', 'UA-66669138-2', 'auto');
-        ga('send', 'pageview');
-
-    </script>
 
 </head>
 <body>
 <div id="app" data-uk-observe style="visibility: hidden">
     <nav class="uk-navbar" style="background: #292929">
         <div class="uk-container uk-container-center">
-        <span class="uk-navbar-brand uk-float-right"><a class="tr-help" href="#/help"><i class="uk-icon-question-circle"></i></a></span>
-        <span class="uk-navbar-brand" style="color: #fff">
+            <span class="uk-navbar-brand uk-float-right"><a class="tr-help" href="#/help"><i
+                    class="uk-icon-question-circle"></i></a></span>
+            <span class="uk-navbar-brand" style="color: #fff">
             <a href="#/">Trikatuka</a>
             <span class="uk-text-small" style="color:#aaa;">Spotify migration tool</span></span>
         </div>
@@ -58,7 +63,7 @@
                         <img src="http://www.placecage.com/g/200/200" alt="" style="max-height: 50px; max-width: 50px;"
                              ng-if="user1.data && !user1.data.images[0].url">
                         <span class="uk-margin-small-left">{{user1.data.display_name || user1.data.id}}</span>
-                    <span ng-hide="viewDisabled">
+                        <span ng-hide="viewDisabled">
                         <a href="" ng-click="user1.login()" ng-if="!user1.authData">sign in</a>
                         <a href="" ng-click="user1.logout()" ng-if="user1.authData">sign out</a>
                     </span>
@@ -78,7 +83,7 @@
                         <img src="http://www.placecage.com/c/100/100" alt="" style="max-height: 50px; max-width: 50px;"
                              ng-if="user2.data && !user2.data.images[0].url">
                         <span class="uk-margin-small-left">{{user2.data.display_name || user2.data.id}}</span>
-                    <span ng-hide="viewDisabled">
+                        <span ng-hide="viewDisabled">
                         <a href="" ng-click="user2.login()" ng-if="!user2.authData">sign in</a>
                         <a href="" ng-click="user2.logout()" ng-if="user2.authData">sign out</a>
                     </span>
@@ -88,17 +93,7 @@
         </div>
         <div class="uk-grid" ng-view></div>
     </div>
-    <div class="uk-width-1-1 uk-text-center uk-margin-top">
-        <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-        <!-- trikatuka -->
-        <ins class="adsbygoogle"
-             style="display:inline-block;width:728px;height:90px"
-             data-ad-client="ca-pub-9007960458261252"
-             data-ad-slot="2734653062"></ins>
-        <script>
-            (adsbygoogle = window.adsbygoogle || []).push({});
-        </script>
-    </div>
+
     <div class="uk-text-muted" style="margin-top:30px;">
         <div class="uk-container uk-container-center uk-text-right"
              style="padding-top: 3px;font-family: monospace;font-size: small;">
@@ -109,26 +104,34 @@
     </div>
 </div>
 <script type="text/javascript">
-    jQuery(document).on('ready',function(){
-        jQuery.get('files', function(response){
-            var appDiv = $('#app');
+    const glob = require('glob')
+    const path = require('path')
 
-            var head= $('head');
-            angular.forEach(response, function(item){
-                head.append('<script src="' + item + '" type="application/javascript">');
-            });
+    var head = document.getElementsByTagName('head')[0];
 
-            appDiv.css({visibility:'visible'});
+    var files = glob.sync(path.join('webapp', 'app', '**/*.js'));
+    var appDiv = document.getElementById('app');
+
+    files.map(item => {
+        const script = document.createElement('script');
+        script.src = '../' + item
+        script.type = 'application/javascript'
+        head.append(script);
+    })
+
+    appDiv.style.visibility = 'visible';
+</script>
+
+<script type="text/javascript">
+    window.onload = () => {
+        setTimeout(() => {
             angular.bootstrap(appDiv, ['trikatuka2']);
-        }, 'json');
 
-        jQuery.fn.cookiesEU({
-            text: 'This website makes use of cookies to enhance browsing experience and provide additional functionality. By closing this message you give your permission to this website to store small bits of data as on your device.',
-            position: 'top',
-            auto_accept: false
-        });
-    });
+        }, 500)
+
+    };
 
 </script>
+
 </body>
 </html>
