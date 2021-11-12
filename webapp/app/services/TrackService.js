@@ -23,11 +23,14 @@ angular.module('trikatuka2').service('TrackService', function (Spotify, $q, Requ
         }
 
         getAll(user).then(function(tracks){
-            var pages = Math.ceil(tracks.length / 50);
+            
+            tracks.reverse()
+            
+            var pages = Math.ceil(tracks.length / 1);
 
             var toTransfer = [];
             for(var i=0; i<pages; i++) {
-                var data  = tracks.slice(i * 50, (i * 50) + 50);
+                var data  = tracks.slice(i * 1, (i * 1) + 1);
                 toTransfer.push(new Page(data));
             }
             return RequestHelper.doAction('transfer',toTransfer).then(function () {
