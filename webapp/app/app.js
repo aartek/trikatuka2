@@ -1,4 +1,4 @@
-var app = angular.module('trikatuka2', ['ngRoute', 'ngResource', 'ngStorage']);
+var app = angular.module('trikatuka2', ['ngRoute', 'ngResource', 'btford.socket-io', 'ngStorage']);
 
 angular.module('trikatuka2').config(function ($routeProvider) {
     $routeProvider.when('/', {

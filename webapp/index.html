@@ -4,20 +4,8 @@
     <meta charset="UTF-8">
     <title>Trikatuka - Spotify migration tool</title>
 
-    <script>
-        const jQuery = require('jquery')
-        window.$ = window.jQuery = jQuery
-    </script>
-
+    <script src="dist/libs.min.js"></script>
     <link rel="stylesheet" href="css/uikit.min.css">
-    <script src="../webapp/js/jquery-2.2.1.min.js"></script>
-    <script src="../webapp/js/uikit.min.js"></script>
-    <script src="../webapp/js/angular.min.js"></script>
-    <script src="../webapp/js/angular-resource.min.js"></script>
-    <script src="../webapp/js/angular-route.min.js"></script>
-    <script src="../webapp/js/ngStorage.min.js"></script>
-    <script src="../webapp/js/underscore-min.js"></script>
-
 
     <style>
         .tr-panel-box-title {
@@ -40,6 +28,24 @@
             color: #bbb;
         }
     </style>
+
+    <script>
+        (function (i, s, o, g, r, a, m) {
+            i['GoogleAnalyticsObject'] = r;
+            i[r] = i[r] || function () {
+                (i[r].q = i[r].q || []).push(arguments)
+            }, i[r].l = 1 * new Date();
+            a = s.createElement(o),
+                m = s.getElementsByTagName(o)[0];
+            a.async = 1;
+            a.src = g;
+            m.parentNode.insertBefore(a, m)
+        })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+        ga('create', 'UA-66669138-2', 'auto');
+        ga('send', 'pageview');
+
+    </script>
 
 </head>
 <body>
@@ -93,7 +99,17 @@
         </div>
         <div class="uk-grid" ng-view></div>
     </div>
-
+    <div class="uk-width-1-1 uk-text-center uk-margin-top">
+        <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+        <!-- trikatuka -->
+        <ins class="adsbygoogle"
+             style="display:inline-block;width:728px;height:90px"
+             data-ad-client="ca-pub-9007960458261252"
+             data-ad-slot="2734653062"></ins>
+        <script>
+            (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+    </div>
     <div class="uk-text-muted" style="margin-top:30px;">
         <div class="uk-container uk-container-center uk-text-right"
              style="padding-top: 3px;font-family: monospace;font-size: small;">
@@ -104,34 +120,26 @@
     </div>
 </div>
 <script type="text/javascript">
-    const glob = require('glob')
-    const path = require('path')
+    jQuery(document).on('ready', function () {
+        jQuery.get('files', function (response) {
+            var appDiv = $('#app');
 
-    var head = document.getElementsByTagName('head')[0];
+            var head = $('head');
+            angular.forEach(response, function (item) {
+                head.append('<script src="' + item + '" type="application/javascript">');
+            });
 
-    var files = glob.sync(path.join('webapp', 'app', '**/*.js'));
-    var appDiv = document.getElementById('app');
-
-    files.map(item => {
-        const script = document.createElement('script');
-        script.src = '../' + item
-        script.type = 'application/javascript'
-        head.append(script);
-    })
-
-    appDiv.style.visibility = 'visible';
-</script>
-
-<script type="text/javascript">
-    window.onload = () => {
-        setTimeout(() => {
+            appDiv.css({visibility: 'visible'});
             angular.bootstrap(appDiv, ['trikatuka2']);
+        }, 'json');
 
-        }, 500)
-
-    };
+        jQuery.fn.cookiesEU({
+            text: 'This website makes use of cookies to enhance browsing experience and provide additional functionality. By closing this message you give your permission to this website to store small bits of data as on your device.',
+            position: 'top',
+            auto_accept: false
+        });
+    });
 
 </script>
-
 </body>
 </html>

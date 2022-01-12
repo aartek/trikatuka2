@@ -1,6 +1,6 @@
-import {PagesProcessor} from "./PagesProcessor";
-import paginator from "./paginator";
-import Track from "../model/Track";
+import {PagesProcessor} from "../../sdk/src/services/PagesProcessor";
+import paginator from "../../sdk/src/services/paginator";
+import Track from "../../sdk/src/model/Track";
 
 
 const TRACKS_URL_PATH = '/me/tracks'

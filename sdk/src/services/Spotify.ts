@@ -1,40 +1,52 @@
 "use strict";
 
-import axios from 'axios'
+import axios, {AxiosResponse} from 'axios'
+import User from "../model/User";
+import {Params} from "../model/Types";
 
 export default class Spotify {
 
     url = 'https://api.spotify.com/v1'
 
-    get(path, user, params) {
+
+    _extractPath(url) {
+        if (url.indexOf(this.url) > -1) {
+            return url.replace(this.url + '/', "/");
+        } else {
+            return url;
+        }
+    }
+
+
+    get(path: string, user: User, params: Params): Promise<AxiosResponse> {
         const self = this;
         return this._beforeRequest(user).then(function (usr) {
-            return axios.get(self.url + path, {
+            return axios.get(self.url + self._extractPath(path), {
                 headers: self._buildHeaders(usr),
                 params: params
             });
         });
     };
 
-    post(path, user, data) {
+    post(path: string, user: User, data: any): Promise<AxiosResponse> {
         const self = this;
         return this._beforeRequest(user).then(function (usr) {
-            return axios.post(self.url + path, data, {
+            return axios.post(self.url + self._extractPath(path), data, {
                 headers: self._buildHeaders(usr),
             });
         });
     };
 
-    put(path, user, data) {
+    put(path: string, user: User, data: any): Promise<AxiosResponse> {
         const self = this;
         return this._beforeRequest(user).then(function (usr) {
-            return axios.put(self.url + path, data, {
+            return axios.put(self.url + self._extractPath(path), data, {
                 headers: self._buildHeaders(usr),
             });
         });
     };
 
-    _beforeRequest(user) {
+    _beforeRequest(user): Promise<any> {
         const refreshingThresholdMs = 5 * 60 * 1000;
         return new Promise(((resolve, reject) => {
             if (user.authData && !user.authData.error && user.authData.expiresAt >= new Date().getTime() - refreshingThresholdMs) {

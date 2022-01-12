@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "module": "es2022",
+    "moduleResolution": "node",
+    "noImplicitAny": false,
+    "removeComments": true,
+    "preserveConstEnums": true,
+    "outDir": "./webapp/dist/sdk",
+    "sourceMap": true,
+    "target": "es2021"
+  },
+  "include": ["sdk/src/**/*"],
+  "exclude": ["node_modules", "sdk/test/**/*"]
+}

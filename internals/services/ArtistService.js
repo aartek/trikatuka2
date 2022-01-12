@@ -1,6 +1,6 @@
 import Artist from "../model/Artist";
-import {PagesProcessor} from "./PagesProcessor";
-import paginator from "./paginator";
+import {PagesProcessor} from "../../sdk/src/services/PagesProcessor";
+import paginator from "../../sdk/src/services/paginator";
 
 export default class ArtistService {
 
@@ -24,26 +24,26 @@ export default class ArtistService {
 
         const transfer = async (data) => this.spotify.put(path, targetUser, data);
 
-        const artists = await this._getAll(user)
+        const idsOfArtists = await this._getAllIds(user)
 
-        const slicesToTransfer = paginator(artists.length, 50, (page) => ({ids: artists.slice(page * 50, (page * 50) + 50)}))
+        const slicesToTransfer = paginator(idsOfArtists.length, 50, (page) => ({ids: idsOfArtists.slice(page * 50, (page * 50) + 50)}))
 
         const promises = slicesToTransfer.map(paginatedItems => PagesProcessor.process([paginatedItems], transfer));
         return await Promise.all(promises);
     };
 
-    async _getAll(user) {
+    async _getAllIds(user) {
         const url = '/me/following?type=artist';
         const params = {
             limit: 50,
         };
 
-        const artists = await this._recursiveLoad(url, user, params, [])
+        const artists = await this._recursiveLoad(url, user, params)
         return artists
     }
 
 
-    async _recursiveLoad(url, user, params, items) {
+    async _recursiveLoad(url, user, params, items = []) {
         const response = await this.spotify.get(url, user, params)
         items.push(...this._getIds(response.artists.items))
 

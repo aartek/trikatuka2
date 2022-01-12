@@ -1,5 +1,5 @@
 import ArtistService from "./ArtistService";
-import Spotify from "./Spotify";
+import Spotify from "../../sdk/src/services/Spotify";
 import {when} from 'jest-when'
 
 test('transfer 150 items split for 3 pages', async () => {
