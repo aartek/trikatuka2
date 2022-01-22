@@ -2,37 +2,44 @@ import {describe, expect, it, jest} from "@jest/globals";
 import Spotify from "../../src/services/Spotify";
 import User from "../../src/model/User";
 import PlaylistService from "../../src/services/PlaylistService";
-import {when} from 'jest-when'
+import {when, resetAllWhenMocks} from 'jest-when'
 import {
     generatePlaylistItems,
     generatePlaylistResponse,
     generateUserPlaylistsResponse
 } from "../../src/services/userPlaylists";
 import {PlaylistResponse} from "../TestTypes";
-import {Params} from "../../src/model/Types";
+import AuthService from "../../src/services/AuthService";
+
+jest.mock("../../src/services/AuthService")
+const authServiceMock = new AuthService("")
 
 describe('Playlist Service', () => {
-    const spotify = new Spotify();
+    const spotify = new Spotify(authServiceMock);
     const spotifyGetSpy = jest.spyOn(spotify, 'get')
     const spotifyPutSpy = jest.spyOn(spotify, 'put')
     const spotifyPostSpy = jest.spyOn(spotify, 'post')
 
-    const USER1 = new User('user1')
-    const USER2 = new User('user2')
+    const USER1 = new User('user1', {}, "SOURCE_USER")
+    const USER2 = new User('user2', {}, "TARGET_USER")
     const PLAYLISTS_GET_PATH = '/me/playlists'
-    const TRACKS_GET_PATH = '/me/playlists'
 
     const playlistService = new PlaylistService(spotify)
 
+    beforeEach(() => {
+        jest.resetAllMocks()
+        resetAllWhenMocks()
+    })
+
     it('should get a page of playlists', async () => {
         //given
-        const paginationParams: Params = {limit: 50, offset: 10};
-        const playlistsResponse: PlaylistResponse[] = [generatePlaylistResponse('playlist1', false, true, 'spotify')]
+        const paginationParams = {limit: 50, offset: 10};
+        const playlistsResponse: PlaylistResponse[] = Array.of(generatePlaylistResponse('playlist1', false, true, 'spotify'))
 
 
         when(spotifyGetSpy)
             .calledWith(PLAYLISTS_GET_PATH, USER1, paginationParams)
-            .mockResolvedValueOnce<>(generateUserPlaylistsResponse(playlistsResponse, paginationParams, 100, USER1.id, false))
+            .mockResolvedValueOnce(generateUserPlaylistsResponse(playlistsResponse, paginationParams, 100, USER1.id, false))
 
         //when
         const playlists = await playlistService.loadPlaylists(USER1, paginationParams)
@@ -60,10 +67,7 @@ describe('Playlist Service', () => {
         //get 1st page
         when(spotifyGetSpy)
             .calledWith(PLAYLISTS_GET_PATH, USER1, {limit: 50})
-            .mockResolvedValueOnce(playlistsResponse1);
-
-        //get 2nd page
-        when(spotifyGetSpy)
+            .mockResolvedValueOnce(playlistsResponse1)
             .calledWith(playlistsResponse1.data.next, USER1, {limit: 50})
             .mockResolvedValueOnce(playlistsResponse2);
 
@@ -99,7 +103,7 @@ describe('Playlist Service', () => {
                 expect.stringContaining('tracks'), //FIXME consider better matching
                 // expect.arrayContaining(trackUrls),
                 USER1,
-                expect.objectContaining({limit: 50, fields: 'items(track(id))'})
+                expect.objectContaining({limit: 50, fields: 'next,items(track(id))'})
             )
             .mockResolvedValue(tracksResponse);
 

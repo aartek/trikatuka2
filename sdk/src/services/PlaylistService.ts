@@ -1,7 +1,7 @@
 import Playlist from "../model/Playlist";
-import paginator, {paginator2} from "./paginator";
+import {paginator} from "./paginator";
 import Spotify from "./Spotify";
-import {OperationResult, Params, Stats} from "../model/Types";
+import {OperationResult, Page, Params, Stats} from "../model/Types";
 import User from "../model/User";
 import {AxiosResponse} from "axios";
 import Track from "../model/Track";
@@ -14,7 +14,7 @@ export default class PlaylistService {
     constructor(private readonly spotify: Spotify) {
     }
 
-    async loadPlaylists(user: User, params: Params): Promise<{ items: Playlist[], total: number }> {
+    async loadPlaylists(user: User, params: Params): Promise<Page<Playlist>> {
         const response = await this.spotify.get(PLAYLISTS_PATH, user, params)
         return {
             items: response.data.items.map(item => Playlist.fromResponse(item)),
@@ -43,7 +43,7 @@ export default class PlaylistService {
     }
 
     async transferAll(user: User, targetUser: User): Promise<Stats<Playlist>> {
-        const playlistsResponse: any = await this.recursiveListLoad(PLAYLISTS_PATH, user);
+        const playlistsResponse: any = await PagesProcessor.recursiveLoad(this.spotify, PLAYLISTS_PATH, user);
         const playlists: Playlist[] = playlistsResponse.map(item => Playlist.fromResponse(item))
         return this.transferPlaylists(playlists.reverse(), user, targetUser);
     }
@@ -69,8 +69,9 @@ export default class PlaylistService {
 
     private async copyPlaylist(playlist: Playlist, user: User, targetUser: User): Promise<OperationResult<Playlist>> {
         try {
-            const tracks = (await this.recursiveListLoad(playlist.tracks.url, user, {fields: 'next,items(track(id))'}))
-                .map(item => Track.fromResponse(item.track))
+            const tracks =
+                (await PagesProcessor.recursiveLoad(this.spotify, playlist.tracks.url, user, (response => response.data), {fields: 'next,items(track(id))'}))
+                    .map(item => Track.fromResponse(item.track))
             const playlistCreationResponse = await this.createPlaylist(targetUser, playlist);
             const newPlaylistId = playlistCreationResponse.data.id;
 
@@ -97,16 +98,16 @@ export default class PlaylistService {
         return this.spotify.post(url, user, data);
     };
 
-    private async recursiveListLoad(path, user, params?: object, items = []) {
-        const response = await this.spotify.get(path, user, Object.assign({limit: 50}, params))
-        items.push(...response.data.items);
-
-        if (response.data.next) {
-            return await this.recursiveListLoad(response.data.next, user, params, items)
-        } else {
-            return items;
-        }
-    }
+    // private async recursiveListLoad(path, user, params?: object, items = []) {
+    //     const response = await this.spotify.get(path, user, Object.assign({limit: 50}, params))
+    //     items.push(...response.data.items);
+    //
+    //     if (response.data.next) {
+    //         return await this.recursiveListLoad(response.data.next, user, params, items)
+    //     } else {
+    //         return items;
+    //     }
+    // }
 
     private async addTracksToPlaylist(tracks: Track[], user: User, playlistId: string): Promise<Stats<string>> {
         const url = `/users/${user.id}/playlists/${playlistId}/tracks`
@@ -115,7 +116,7 @@ export default class PlaylistService {
 
         //TODO remove commented
         // const slicesToTransfer = paginator(tracks.length, 100, (item) => item.track.uri)
-        const slicesToTransfer: string[][] = paginator2<Track, string>(tracks, 100, (pageOfTracks) => pageOfTracks.map((track: Track) => track.id));
+        const slicesToTransfer: string[][] = paginator<Track, string>(tracks, 100, (track) => track.id);
 
         //TODO remove commented
         // const promises = slicesToTransfer.map(paginatedItems => PagesProcessor.process([paginatedItems], transfer));

@@ -1,6 +1,6 @@
 "use strict";
 
-angular.module('trikatuka2').service('users', function (User) {
+angular.module('trikatuka2').service('users', function () {
     this.user1 = null;
     this.user2 = null;
 });

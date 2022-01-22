@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <title>Trikatuka - Spotify migration tool</title>
 
+    <script src="dist/bundle.js"></script>
     <script src="dist/libs.min.js"></script>
     <link rel="stylesheet" href="css/uikit.min.css">
+
 
     <style>
         .tr-panel-box-title {
@@ -29,23 +31,23 @@
         }
     </style>
 
-    <script>
-        (function (i, s, o, g, r, a, m) {
-            i['GoogleAnalyticsObject'] = r;
-            i[r] = i[r] || function () {
-                (i[r].q = i[r].q || []).push(arguments)
-            }, i[r].l = 1 * new Date();
-            a = s.createElement(o),
-                m = s.getElementsByTagName(o)[0];
-            a.async = 1;
-            a.src = g;
-            m.parentNode.insertBefore(a, m)
-        })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+<!--    <script>-->
+<!--        (function (i, s, o, g, r, a, m) {-->
+<!--            i['GoogleAnalyticsObject'] = r;-->
+<!--            i[r] = i[r] || function () {-->
+<!--                (i[r].q = i[r].q || []).push(arguments)-->
+<!--            }, i[r].l = 1 * new Date();-->
+<!--            a = s.createElement(o),-->
+<!--                m = s.getElementsByTagName(o)[0];-->
+<!--            a.async = 1;-->
+<!--            a.src = g;-->
+<!--            m.parentNode.insertBefore(a, m)-->
+<!--        })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');-->
 
-        ga('create', 'UA-66669138-2', 'auto');
-        ga('send', 'pageview');
+<!--        ga('create', 'UA-66669138-2', 'auto');-->
+<!--        ga('send', 'pageview');-->
 
-    </script>
+<!--    </script>-->
 
 </head>
 <body>
@@ -70,8 +72,8 @@
                              ng-if="user1.data && !user1.data.images[0].url">
                         <span class="uk-margin-small-left">{{user1.data.display_name || user1.data.id}}</span>
                         <span ng-hide="viewDisabled">
-                        <a href="" ng-click="user1.login()" ng-if="!user1.authData">sign in</a>
-                        <a href="" ng-click="user1.logout()" ng-if="user1.authData">sign out</a>
+                        <a href="" ng-click="login('SOURCE_USER')" ng-if="!user1.data">sign in</a>
+                        <a href="" ng-click="logout('SOURCE_USER')" ng-if="user1.data">sign out</a>
                     </span>
 
                         <div class="tr-panel-box-title uk-text-muted"><i class="uk-icon-user uk-margin-small-right"></i>Old
@@ -90,8 +92,8 @@
                              ng-if="user2.data && !user2.data.images[0].url">
                         <span class="uk-margin-small-left">{{user2.data.display_name || user2.data.id}}</span>
                         <span ng-hide="viewDisabled">
-                        <a href="" ng-click="user2.login()" ng-if="!user2.authData">sign in</a>
-                        <a href="" ng-click="user2.logout()" ng-if="user2.authData">sign out</a>
+                        <a href="" ng-click="login('TARGET_USER')" ng-if="!user2.data">sign in</a>
+                        <a href="" ng-click="logout('TARGET_USER')" ng-if="user2.data">sign out</a>
                     </span>
                     </div>
                 </div>
@@ -100,15 +102,15 @@
         <div class="uk-grid" ng-view></div>
     </div>
     <div class="uk-width-1-1 uk-text-center uk-margin-top">
-        <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-        <!-- trikatuka -->
-        <ins class="adsbygoogle"
-             style="display:inline-block;width:728px;height:90px"
-             data-ad-client="ca-pub-9007960458261252"
-             data-ad-slot="2734653062"></ins>
-        <script>
-            (adsbygoogle = window.adsbygoogle || []).push({});
-        </script>
+<!--        <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>-->
+<!--        &lt;!&ndash; trikatuka &ndash;&gt;-->
+<!--        <ins class="adsbygoogle"-->
+<!--             style="display:inline-block;width:728px;height:90px"-->
+<!--             data-ad-client="ca-pub-9007960458261252"-->
+<!--             data-ad-slot="2734653062"></ins>-->
+<!--        <script>-->
+<!--            (adsbygoogle = window.adsbygoogle || []).push({});-->
+<!--        </script>-->
     </div>
     <div class="uk-text-muted" style="margin-top:30px;">
         <div class="uk-container uk-container-center uk-text-right"

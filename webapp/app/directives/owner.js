@@ -8,11 +8,12 @@ angular.module('trikatuka2').directive('owner', function($http){
         replace: true,
         scope:{},
         link: function(scope,elem,attrs,ngModel){
-            ngModel.$render = function(){
-                $http.get(ngModel.$modelValue.href).then(function(response){
-                    scope.owner = response.data;
-                });
-            };
+            //fixme
+            // ngModel.$render = function(){
+            //     $http.get(ngModel.$modelValue.href).then(function(response){
+            //         scope.owner = response.data;
+            //     });
+            // };
         }
     }
 });

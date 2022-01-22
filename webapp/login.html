@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="dist/bundle.js"></script>
+
+    <script>
+        (async function () {
+            const {authService} = sdk.create()
+            const url = new URL(location.href)
+            const userType = url.hash.split('userType=')[1]
+
+            if (url.searchParams.has('code')) {
+                await authService.handleAuthCallback()
+                window.close()
+            } else {
+                authService.authorize(userType)
+            }
+        })()
+    </script>
+</head>
+<body>
+
+</body>
+</html>

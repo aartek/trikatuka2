@@ -2,14 +2,17 @@
 
 import axios, {AxiosResponse} from 'axios'
 import User from "../model/User";
-import {Params} from "../model/Types";
+import {GetParams} from "../model/Types";
+import AuthService from "./AuthService";
 
 export default class Spotify {
 
     url = 'https://api.spotify.com/v1'
 
+    constructor(private readonly authService: AuthService) {
+    }
 
-    _extractPath(url) {
+    _extractPath(url: string) {
         if (url.indexOf(this.url) > -1) {
             return url.replace(this.url + '/', "/");
         } else {
@@ -18,7 +21,7 @@ export default class Spotify {
     }
 
 
-    get(path: string, user: User, params: Params): Promise<AxiosResponse> {
+    get(path: string, user: User, params: GetParams): Promise<AxiosResponse> {
         const self = this;
         return this._beforeRequest(user).then(function (usr) {
             return axios.get(self.url + self._extractPath(path), {
@@ -46,27 +49,30 @@ export default class Spotify {
         });
     };
 
-    _beforeRequest(user): Promise<any> {
-        const refreshingThresholdMs = 5 * 60 * 1000;
-        return new Promise(((resolve, reject) => {
-            if (user.authData && !user.authData.error && user.authData.expiresAt >= new Date().getTime() - refreshingThresholdMs) {
-                user.refreshToken().then(function (refreshedUser) {
-                    resolve(refreshedUser);
-                });
-            } else if (user.authData && user.authData.error) {
-                user.logout();
-                reject();
-            } else if (user.authData && !user.authData.error) {
-                resolve(user);
-            } else {
-                reject();
-            }
-        }));
+    async _beforeRequest(user: User): Promise<User> {
+        // const refreshingThresholdMs = 5 * 60 * 1000;
+        // return new Promise(((resolve, reject) => {
+        //     if (user.authData && !user.authData.error && user.authData.expiresAt >= new Date().getTime() - refreshingThresholdMs) {
+        //         // user.refreshToken().then(function (refreshedUser) {
+        //         //     resolve(refreshedUser);
+        //         // });
+        //         throw Error('not yet implemented')
+        //     } else if (user.authData && user.authData.error) {
+        //         user.logout();
+        //         reject();
+        //     } else if (user.authData && !user.authData.error) {
+        //         resolve(user);
+        //     } else {
+        //         reject();
+        //     }
+        // }));
+        return user
     }
 
-    _buildHeaders(user) {
+    _buildHeaders(user: User) {
+        const authData = this.authService.getAuthData(user.type)
         return {
-            'Authorization': 'Bearer ' + user.getAccessToken(),
+            'Authorization': `${authData.token_type} ${authData.access_token}`,
             // 'Accept': 'application/json',
             // 'Content-type': 'application/json'
         };

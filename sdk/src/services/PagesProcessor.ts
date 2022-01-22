@@ -27,15 +27,18 @@ export default class PagesProcessor {
      * @param spotify
      * @param path
      * @param user
+     * @param dataProvider - function which takes the response as param and should return object with items property
      * @param params
      * @param items
      */
-    static async recursiveLoad(spotify: Spotify, path, user, params?: object, items: object[] = []): Promise<any[]> {
+    static async recursiveLoad(spotify: Spotify, path, user, dataProvider: (response) => { items, next? } = (response => response.data), params?: object, items: object[] = []): Promise<any[]> {
         const response = await spotify.get(path, user, Object.assign({limit: 50}, params))
-        items.push(...response.data.items);
+        const data = dataProvider(response)
+        items.push(...data.items);
+        console.log('items',items)
 
-        if (response.data.next) {
-            return await PagesProcessor.recursiveLoad(spotify, response.data.next, user, params, items)
+        if (data.next) {
+            return await PagesProcessor.recursiveLoad(spotify, data.next, user,dataProvider, params, items)
         } else {
             return items;
         }
