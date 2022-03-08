@@ -8,7 +8,7 @@ import {default as _User} from "./model/User";
 
 
 export function create(clientId) {
-    const authService = new _AuthService('')
+    const authService = new _AuthService('27edb2ed1e2c4c5c8cd7e192c81e37e8')
     const spotify = new _Spotify(authService)
     const albumService = new _AlbumService(spotify)
     const artistService = new _ArtistService(spotify)

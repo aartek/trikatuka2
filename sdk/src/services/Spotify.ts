@@ -2,7 +2,7 @@
 
 import axios, {AxiosResponse} from 'axios'
 import User from "../model/User";
-import {GetParams} from "../model/Types";
+import {Params} from "../model/Types";
 import AuthService from "./AuthService";
 
 export default class Spotify {
@@ -21,7 +21,7 @@ export default class Spotify {
     }
 
 
-    get(path: string, user: User, params: GetParams): Promise<AxiosResponse> {
+    get(path: string, user: User, params: Params): Promise<AxiosResponse> {
         const self = this;
         return this._beforeRequest(user).then(function (usr) {
             return axios.get(self.url + self._extractPath(path), {

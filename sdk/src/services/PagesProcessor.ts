@@ -35,7 +35,6 @@ export default class PagesProcessor {
         const response = await spotify.get(path, user, Object.assign({limit: 50}, params))
         const data = dataProvider(response)
         items.push(...data.items);
-        console.log('items',items)
 
         if (data.next) {
             return await PagesProcessor.recursiveLoad(spotify, data.next, user,dataProvider, params, items)

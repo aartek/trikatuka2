@@ -145,25 +145,9 @@ describe('Playlist Service', () => {
         const playlistsResponse = generateUserPlaylistsResponse([generatePlaylistResponse('playlistWith60Tracks', false, false, USER1.id)],
             {limit: 50}, 1, USER1.id, false)
 
-        //get tracks to copy
-        const tracksResponse = (count, nextOffset = null) => {
-            return {
-                data: {
-                    items: [...Array.from(Array(count).keys())].map(num => {
-                        return {
-                            "track": {
-                                "id": num,
-                                "name": "Love Again"
-                            }
-                        }
-                    }),
-                    "next": !nextOffset ? null : `https://api.spotify.com/v1/playlists${playlistId}/tracks?offset=${nextOffset}&limit=50`,
-                }
-            }
-        };
 
-        const trackResponse1 = tracksResponse(50, 50)
-        const trackResponse2 = tracksResponse(10)
+        const trackResponse1 = tracksResponse(playlistId, 50, 50)
+        const trackResponse2 = tracksResponse(playlistId, 10)
 
         when(spotifyGetSpy)
             .calledWith(PLAYLISTS_GET_PATH, USER1, {limit: 50})
@@ -176,10 +160,8 @@ describe('Playlist Service', () => {
                 USER1,
                 expect.objectContaining({limit: 50, fields: 'next,items(track(id))'})
             )
-            .mockResolvedValue(trackResponse1);
-
-        //get 2nd page of tracks
-        when(spotifyGetSpy)
+            .mockResolvedValue(trackResponse1)
+            //get 2nd page of tracks
             .calledWith(
                 expect.stringContaining(`/playlists${playlistId}/tracks?offset=50&limit=50`),
                 USER1,
@@ -219,11 +201,199 @@ describe('Playlist Service', () => {
     })
 
     //body in add tracks to playlist request has 100 ids limits
-    it('should copy playlist with more than 100 tracks', () => {
+    it('should copy playlist with more than 100 tracks', async () => {
+        const playlistId = 'playlistWith150Tracks'
+        const expectedName = `Playlist ${playlistId}`
+
+        const playlistsResponse =
+            generateUserPlaylistsResponse([
+                generatePlaylistResponse(playlistId, false, false, USER1.id)
+            ], {limit: 50}, 1, USER1.id, false)
+
+        const trackResponse1 = tracksResponse(playlistId, 50, 50)
+        const trackResponse2 = tracksResponse(playlistId, 50, 100)
+        const trackResponse3 = tracksResponse(playlistId, 50)
+
+
+        when(spotifyGetSpy)
+            .calledWith(PLAYLISTS_GET_PATH, USER1, {limit: 50})
+            .mockResolvedValueOnce(playlistsResponse);
+
+        //get 1st page of tracks
+        when(spotifyGetSpy)
+            .calledWith(
+                expect.stringContaining(`/playlists/${playlistId}/tracks`),
+                USER1,
+                expect.objectContaining({limit: 50, fields: 'next,items(track(id))'})
+            )
+            .mockResolvedValue(trackResponse1)
+            .calledWith(
+                expect.stringContaining(`/playlists${playlistId}/tracks?offset=50&limit=50`),
+                USER1,
+                expect.objectContaining({limit: 50, fields: 'next,items(track(id))'})
+            )
+            .mockResolvedValue(trackResponse2)
+            .calledWith(
+                expect.stringContaining(`/playlists${playlistId}/tracks?offset=100&limit=50`),
+                USER1,
+                expect.objectContaining({limit: 50, fields: 'next,items(track(id))'})
+            )
+            .mockResolvedValue(trackResponse3);
+
+        //create playlist
+        when(spotifyPostSpy)
+            .calledWith(`/users/${USER2.id}/playlists`, USER2, expect.objectContaining({
+                name: expectedName,
+                public: false
+            }))
+            .mockResolvedValue({data: {id: 'newPlaylistId'}});
+
+        //copy tracks
+        when(spotifyPutSpy)
+            .calledWith(
+                `/users/${USER2.id}/playlists/${playlistId}/tracks`,
+                USER2,
+                {uris: trackResponse1.data.items.concat(trackResponse2.data.items).map(item => item.track.id)}
+            )
+            .mockResolvedValue({})
+            .calledWith(
+                `/users/${USER2.id}/playlists/${playlistId}/tracks`,
+                USER2,
+                {uris: trackResponse3.data.items.map(item => item.track.id)}
+            )
+            .mockResolvedValue({})
+
+
+        //when
+        const {succeeded, failed} = await playlistService.transferAll(USER1, USER2);
+
+        //then
+        expect(succeeded.length).toBe(1)
+        expect(failed.length).toBe(0)
+        expect(spotifyPostSpy).toHaveBeenCalledTimes(1) // playlists creations
+        expect(spotifyPutSpy).toHaveBeenCalledWith(
+            `/users/${USER2.id}/playlists/newPlaylistId/tracks`,
+            USER2,
+            {uris: trackResponse1.data.items.concat(trackResponse2.data.items).map(item => item.track.id)}
+        )
+        expect(spotifyPutSpy).toHaveBeenCalledWith(
+            `/users/${USER2.id}/playlists/newPlaylistId/tracks`,
+            USER2,
+            {uris: trackResponse3.data.items.map(item => item.track.id)}
+        )
 
     })
 
-    it('should follow playlist', () => {
+    it('should follow public playlist', async () => {
+
+        //given
+        const playlistId = 'publicPlaylistId'
+        const playlistOwnerId = 'publicUserId'
+        const followUrl = `/users/${playlistOwnerId}/playlists/${playlistId}/followers`
+
+        const playlistsResponse = generateUserPlaylistsResponse([
+            generatePlaylistResponse(playlistId, false, true, playlistOwnerId)
+        ], {limit: 50}, 1, playlistOwnerId, false)
+
+        when(spotifyGetSpy)
+            .calledWith(PLAYLISTS_GET_PATH, USER1, {limit: 50})
+            .mockResolvedValueOnce(playlistsResponse);
+
+        when(spotifyPutSpy)
+            .calledWith(followUrl, {public: true})
+            .mockResolvedValueOnce({});
+
+        //when
+        const {succeeded, failed} = await playlistService.transferAll(USER1, USER2);
+
+        //then
+        expect(succeeded.length).toBe(1)
+        expect(failed.length).toBe(0)
+        expect(spotifyPutSpy).toHaveBeenCalledWith(
+            followUrl,
+            USER2,
+            {public: true}
+        )
+
+
     })
 
+    it('should follow private playlist', async () => {
+        //given
+        const playlistId = 'privatePlaylistId'
+        const playlistOwnerId = 'publicUserId'
+        const followUrl = `/users/${playlistOwnerId}/playlists/${playlistId}/followers`
+
+        const playlistsResponse = generateUserPlaylistsResponse([
+            generatePlaylistResponse(playlistId, false, false, playlistOwnerId)
+        ], {limit: 50}, 1, playlistOwnerId, false)
+
+        when(spotifyGetSpy)
+            .calledWith(PLAYLISTS_GET_PATH, USER1, {limit: 50})
+            .mockResolvedValueOnce(playlistsResponse);
+
+        when(spotifyPutSpy)
+            .calledWith(followUrl, {public: false})
+            .mockResolvedValueOnce({});
+
+        //when
+        const {succeeded, failed} = await playlistService.transferAll(USER1, USER2);
+
+        //then
+        expect(succeeded.length).toBe(1)
+        expect(failed.length).toBe(0)
+        expect(spotifyPutSpy).toHaveBeenCalledWith(
+            followUrl,
+            USER2,
+            {public: false}
+        )
+    })
+
+    it('should follow collaborative playlist', async () => {
+        //given
+        const playlistId = 'playlistWith60Tracks'
+        const playlistOwnerId = USER1.id
+        const followUrl = `/users/${playlistOwnerId}/playlists/${playlistId}/followers`
+
+        const playlistsResponse = generateUserPlaylistsResponse([
+            generatePlaylistResponse('playlistWith60Tracks', true, false, playlistOwnerId)
+        ], {limit: 50}, 1, playlistOwnerId, false)
+
+        when(spotifyGetSpy)
+            .calledWith(PLAYLISTS_GET_PATH, USER1, {limit: 50})
+            .mockResolvedValueOnce(playlistsResponse);
+
+        when(spotifyPutSpy)
+            .calledWith(followUrl, {public: false})
+            .mockResolvedValueOnce({});
+
+        //when
+        const {succeeded, failed} = await playlistService.transferAll(USER1, USER2);
+
+        //then
+        expect(succeeded.length).toBe(1)
+        expect(failed.length).toBe(0)
+        expect(spotifyPutSpy).toHaveBeenCalledWith(
+            followUrl,
+            USER2,
+            {public: false}
+        )
+    })
+
+    function tracksResponse(playlistId, count, nextOffset = null) {
+        return {
+            data: {
+                items: [...Array.from(Array(count).keys())].map(num => {
+                    return {
+                        "track": {
+                            "id": num,
+                            "name": "Love Again"
+                        }
+                    }
+                }),
+                "next": !nextOffset ? null : `https://api.spotify.com/v1/playlists${playlistId}/tracks?offset=${nextOffset}&limit=50`,
+            }
+        }
+
+    }
 })

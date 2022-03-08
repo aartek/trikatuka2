@@ -25,7 +25,7 @@ export default class PlaylistService {
     async transferPlaylists(playlists: Playlist[], user: User, targetUser: User): Promise<Stats<Playlist>> {
         const promises: Promise<OperationResult<Playlist>>[] = playlists.map((playlist: Playlist) => {
             if (playlist.collaborative || playlist.owner.id !== user.id) {
-                return this.followCollaborative(playlist, targetUser);
+                return this.follow(playlist, targetUser);
             } else {
                 return this.copyPlaylist(playlist, user, targetUser);
             }
@@ -48,7 +48,7 @@ export default class PlaylistService {
         return this.transferPlaylists(playlists.reverse(), user, targetUser);
     }
 
-    private async followCollaborative(playlist: Playlist, targetUser: User): Promise<OperationResult<Playlist>> {
+    private async follow(playlist: Playlist, targetUser: User): Promise<OperationResult<Playlist>> {
         const data = {
             public: playlist.isPublic
         };
@@ -98,103 +98,12 @@ export default class PlaylistService {
         return this.spotify.post(url, user, data);
     };
 
-    // private async recursiveListLoad(path, user, params?: object, items = []) {
-    //     const response = await this.spotify.get(path, user, Object.assign({limit: 50}, params))
-    //     items.push(...response.data.items);
-    //
-    //     if (response.data.next) {
-    //         return await this.recursiveListLoad(response.data.next, user, params, items)
-    //     } else {
-    //         return items;
-    //     }
-    // }
-
     private async addTracksToPlaylist(tracks: Track[], user: User, playlistId: string): Promise<Stats<string>> {
         const url = `/users/${user.id}/playlists/${playlistId}/tracks`
 
         const transfer = async (tracks: string[]) => this.spotify.put(url, user, {uris: tracks});
 
-        //TODO remove commented
-        // const slicesToTransfer = paginator(tracks.length, 100, (item) => item.track.uri)
         const slicesToTransfer: string[][] = paginator<Track, string>(tracks, 100, (track) => track.id);
-
-        //TODO remove commented
-        // const promises = slicesToTransfer.map(paginatedItems => PagesProcessor.process([paginatedItems], transfer));
         return PagesProcessor.process(slicesToTransfer, transfer);
     }
-
-
-    //===============================
-
-
-    // async transfer(playlist, targetUser) {
-    //     if (playlist.collaborative || playlist.owner.id !== playlist.user.getUserId()) {
-    //         return await this._followCollaborative(playlist, targetUser);
-    //     } else {
-    //         return this._copyPlaylist(playlist, targetUser);
-    //     }
-    // };
-    //
-    // async _followCollaborative(playlist, targetUser) {
-    //     const data = {
-    //         public: playlist.isPublic
-    //     };
-    //     const url = `https://api.spotify.com/v1/users/${playlist.owner.id}/playlists/${playlist.id}/followers`;
-    //     try {
-    //         await this.spotify.put(url, targetUser, data)
-    //         return {
-    //             success: true,
-    //             playlist: playlist
-    //         }
-    //     } catch (e) {
-    //         return {
-    //             success: false,
-    //             playlist: playlist
-    //         }
-    //     }
-    // };
-    //
-    //
-    // async _copyPlaylist(playlist, targetUser) {
-    //     try {
-    //         const tracks = this.loadTracks()
-    //         const playlistCreationResponse = await this.createPlaylist(targetUser, playlist.name, playlist.isPublic)
-    //         const newPlaylistId = playlistCreationResponse.data.id;
-    //
-    //         await this.addTracksToPlaylist(tracks, targetUser, newPlaylistId)
-    //         return {
-    //             success: true,
-    //             playlist: playlist
-    //         }
-    //
-    //     } catch (e) {
-    //         return {
-    //             success: false,
-    //             playlist: playlist
-    //         };
-    //     }
-    // };
-    //
-    // async loadTracks(playlist) {
-    //     const params = {
-    //         limit: 100
-    //     }
-    //     const url = `/users/${playlist.user.getUserId()}/playlists/${playlist.id}/tracks`;
-    //
-    //     const tracks = await this._recursiveTracksLoad(url, playlist.user.getUserId(), params)
-    //     return tracks;
-    // };
-    //
-    // async _recursiveTracksLoad(url, user, params, items = []) {
-    //     const response = await this.spotify.get(url, user, params)
-    //     items.push(...response.items.map(track => track.id))
-    //
-    //     if (response.next) {
-    //         const nextUrl = response.next.replace("https://api.spotify.com/v1/", "/")
-    //         return await this._recursiveTracksLoad(nextUrl, user, params, items)
-    //     } else {
-    //         return items;
-    //     }
-    // }
-
 }

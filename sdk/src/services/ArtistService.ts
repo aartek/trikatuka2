@@ -1,7 +1,7 @@
 import Artist from "../model/Artist";
 import Spotify from "./Spotify";
 import User from "../model/User";
-import {GetParams, Page, Params} from "../model/Types";
+import {AlbumGetParams, Page, Params} from "../model/Types";
 import {paginator} from "./paginator";
 import PagesProcessor from "./PagesProcessor";
 
@@ -14,7 +14,7 @@ export default class ArtistService {
     }
 
     async loadArtists(user: User, params: Params, lastArtistId?: string): Promise<Page<Artist>> {
-        const artistParams: GetParams = Object.assign(params, lastArtistId ? {after: lastArtistId} : {})
+        const artistParams: AlbumGetParams = Object.assign(params, lastArtistId ? {after: lastArtistId} : {})
 
         const response = await this.spotify.get(ARTISTS_PATH, user, artistParams)
         return {
