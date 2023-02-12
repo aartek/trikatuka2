@@ -1,4 +1,5 @@
-window.sdk = sdk.create()
+//fixme client id
+window.sdk = sdk.create({clientId: 'TODO', trackTransferDelayMs: 2000})
 var app = angular.module('trikatuka2', ['ngRoute', 'ngResource']);
 
 angular.module('trikatuka2').config(function ($routeProvider) {

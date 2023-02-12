@@ -9,10 +9,10 @@ const TRACKS_PATH = '/me/tracks'
 
 export default class TrackService {
 
-    constructor(private readonly spotify: Spotify) {
+    constructor(private readonly spotify: Spotify, private readonly trackTransferDelayMs = 2000) {
     }
 
-    async loadAlbums(user: User, params: Params): Promise<Page<Track>> {
+    async loadTracks(user: User, params: Params): Promise<Page<Track>> {
         const response = await this.spotify.get(TRACKS_PATH, user, params);
         return {
             items: response.data.items.map((item: any) => Track.fromResponse(item.track)),
@@ -31,7 +31,7 @@ export default class TrackService {
                     return await (new Promise(res => {
                         setTimeout(() => {
                             res(result)
-                        }, 3000)
+                        }, this.trackTransferDelayMs)
                     }))
                 }))
             .then(result => {
