@@ -11,7 +11,7 @@ import {PlaylistListComponent} from './components/playlist-list/playlist-list.co
 import {TrackListComponent} from './components/track-list/track-list.component';
 import {TableModule} from "primeng/table";
 import {ButtonModule} from "primeng/button";
-import {AuthService, create, PlaylistService} from "trikatuka-spotify-sdk";
+import {AuthService, create, PlaylistService, TrackService} from "trikatuka-spotify-sdk";
 import {CardModule} from "primeng/card";
 
 
@@ -40,7 +40,8 @@ const SDK = create(sdkConfig)
   ],
   providers: [
     {provide: AuthService, useValue: SDK.authService},
-    {provide: PlaylistService, useValue: SDK.playlistService}
+    {provide: PlaylistService, useValue: SDK.playlistService},
+    {provide: TrackService, useValue: SDK.trackService},
   ],
   bootstrap: [AppComponent]
 })

@@ -1,6 +1,6 @@
-import {Component, OnInit} from '@angular/core';
-import {PlaylistService, UserType} from "trikatuka-spotify-sdk";
-import {AuthService} from "../../services/auth.service";
+import { Component, OnInit } from '@angular/core';
+import { PlaylistService, UserType } from "trikatuka-spotify-sdk";
+import { AuthService } from "../../services/auth.service";
 import Playlist from "trikatuka-spotify-sdk/dist/model/Playlist";
 
 @Component({
@@ -9,13 +9,13 @@ import Playlist from "trikatuka-spotify-sdk/dist/model/Playlist";
   styleUrls: ['./playlist-list.component.scss']
 })
 export class PlaylistListComponent implements OnInit {
-
   items: Playlist[];
+  selectedPlaylists: Playlist[] = [];
 
   constructor(private readonly authService: AuthService, private readonly playlistService: PlaylistService) {
     this.items = []
 
-    if(this.authService.isAuthorized) {
+    if (this.authService.isAuthorized) {
       this.loadPlaylists();
     }
 
@@ -29,10 +29,14 @@ export class PlaylistListComponent implements OnInit {
   private loadPlaylists() {
     this.playlistService.loadPlaylists(
       this.authService.getUser("SOURCE_USER"), { limit: 50, offset: 0 }).then(pageOfPlaylists => {
-      this.items = pageOfPlaylists.items;
-    })
+        this.items = pageOfPlaylists.items;
+      })
 
   }
   ngOnInit(): void {
+  }
+
+  clearSelection() {
+    this.selectedPlaylists = [];
   }
 }

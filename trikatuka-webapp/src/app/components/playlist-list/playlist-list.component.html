@@ -1,7 +1,11 @@
-<p-table [value]="items">
+<span>Selected playlists: {{selectedPlaylists.length}} <button (click)="clearSelection()">x</button></span>
+<p-table [value]="items" selectionMode="multiple" [(selection)]="selectedPlaylists" dataKey="id" [paginator]="true" [rows]="10"
+  [selectionPageOnly]="true">
   <ng-template pTemplate="header">
     <tr>
-      <th></th>
+      <th>
+        <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+      </th>
       <th>#</th>
       <th>Name</th>
       <th>Tracks</th>
@@ -10,12 +14,12 @@
       <th>Owner</th>
     </tr>
   </ng-template>
-  <ng-template pTemplate="body" let-playlist>
-    <tr>
+  <ng-template pTemplate="body" let-playlist let-rowIndex="rowIndex">
+    <tr [pSelectableRow]="playlist" [pSelectableRowIndex]="rowIndex">
       <td>
-<!--        <checkbox checkboxes="checkboxes" uid="item.id" model="item"></checkbox>-->
+        <p-tableCheckbox [value]="playlist"></p-tableCheckbox>
       </td>
-<!--      <td>{{pagination.offset + $index + 1}}.</td>-->
+      <td>{{rowIndex + 1}}.</td>
       <td>{{playlist.name}}</td>
       <td>{{playlist.tracksCount}}</td>
       <td>
@@ -27,7 +31,7 @@
         <i class="uk-icon-times" *ngIf="playlist.collaborative"></i>
       </td>
       <td>
-<!--        <owner ng-model="item.owner"></owner>-->
+        <!--        <owner ng-model="item.owner"></owner>-->
       </td>
     </tr>
   </ng-template>
