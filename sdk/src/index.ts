@@ -1,27 +1,25 @@
-import {default as _AuthService} from "./services/AuthService";
-import {default as _AlbumService} from "./services/AlbumService";
-import {default as _ArtistService} from "./services/ArtistService";
-import {default as _PlaylistService} from "./services/PlaylistService";
-import {default as _TrackService} from "./services/TrackService";
-import {default as _Spotify} from "./services/Spotify";
-import {default as _User} from "./model/User";
-
+import {AlbumService, ArtistService, AuthService, PlaylistService, Spotify, TrackService} from "./services";
 
 interface IConfig {
-    clientId?: string,
+    clientId: string,
+    redirectUri: string
     trackTransferDelayMs?: number
 }
 
 export function create(config: IConfig) {
-    const authService = new _AuthService('27edb2ed1e2c4c5c8cd7e192c81e37e8')
-    const spotify = new _Spotify(authService)
-    const albumService = new _AlbumService(spotify)
-    const artistService = new _ArtistService(spotify)
-    const playlistService = new _PlaylistService(spotify)
-    const trackService = new _TrackService(spotify, config.trackTransferDelayMs)
-    const User = _User
+    const authService = new AuthService(config.clientId, config.redirectUri)
+    const spotify = new Spotify(authService)
+    const albumService = new AlbumService(spotify)
+    const artistService = new ArtistService(spotify)
+    const playlistService = new PlaylistService(spotify)
+    const trackService = new TrackService(spotify, config.trackTransferDelayMs)
+    const user = () => {
+    }
 
     return {
-        authService, albumService, artistService, playlistService, trackService, User
+        authService, albumService, artistService, playlistService, trackService, user
     }
 }
+
+export {AlbumService, ArtistService, AuthService, PlaylistService, Spotify, TrackService} from './services'
+export * from './model'

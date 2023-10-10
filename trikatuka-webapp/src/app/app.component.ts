@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import {MenuItem} from 'primeng/api';
+import {AuthService} from "./services/auth.service";
+import {UserType} from "trikatuka-spotify-sdk";
 
 @Component({
   selector: 'app-root',
@@ -10,12 +12,21 @@ export class AppComponent {
   title = 'trikatuka-webapp';
 
   tabs: MenuItem[];
+  activeItem: MenuItem;
+  user1Type: UserType = 'SOURCE_USER'
+  user2Type: UserType = 'TARGET_USER'
 
-  constructor() {
+  constructor(private authService: AuthService) {
     this.tabs = [
-      {label: 'Playlists', icon: 'pi pi-fw pi-home'},
-      {label: 'Tracks', icon: 'pi pi-fw pi-home'}
+      {label: 'Playlists', icon: 'pi pi-fw pi-home', routerLink: ['/playlists']},
+      {label: 'Tracks', icon: 'pi pi-fw pi-home', routerLink: ['/tracks']}
     ]
+
+    this.activeItem = this.tabs[0];
+  }
+
+  auth(userType: UserType){
+    this.authService.auth(userType)
   }
 
 }

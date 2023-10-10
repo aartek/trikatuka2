@@ -1,14 +1,13 @@
 import Artist from "../model/Artist";
-import Spotify from "./Spotify";
-import User from "../model/User";
-import {AlbumGetParams, Page, Params} from "../model/Types";
+import {Spotify} from "./Spotify";
+import {AlbumGetParams, Page, Params, User} from "../model";
 import {paginator} from "./paginator";
-import PagesProcessor from "./PagesProcessor";
+import {PagesProcessor} from "./PagesProcessor";
 
 const ARTISTS_PATH = `/me/following?type=artist`
 const PAGE_SIZE = 50
 
-export default class ArtistService {
+export class ArtistService {
 
     constructor(private readonly spotify: Spotify) {
     }

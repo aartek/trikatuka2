@@ -1,13 +1,12 @@
-import PagesProcessor from "./PagesProcessor";
+import {PagesProcessor} from "./PagesProcessor";
 import {paginator} from "./paginator";
-import Spotify from "./Spotify";
-import User from "../model/User";
-import {Page, Params} from "../model/Types";
+import {Spotify} from "./Spotify";
+import {Page, Params, User} from "../model";
 import Track from "../model/Track";
 
 const TRACKS_PATH = '/me/tracks'
 
-export default class TrackService {
+export class TrackService {
 
     constructor(private readonly spotify: Spotify, private readonly trackTransferDelayMs = 2000) {
     }

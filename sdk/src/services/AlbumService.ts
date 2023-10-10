@@ -1,14 +1,13 @@
-import PagesProcessor from "./PagesProcessor";
+import {PagesProcessor} from "./PagesProcessor";
 import Album from "../model/Album";
 import {paginator} from "./paginator";
-import Spotify from "./Spotify";
-import User from "../model/User";
-import {Page, Params} from "../model/Types";
+import {Spotify} from "./Spotify";
+import {Page, Params, User} from "../model";
 
 const PAGE_SIZE = 50
 const ALBUMS_PATH = '/me/albums'
 
-export default class AlbumService {
+export class AlbumService {
 
     constructor(private readonly spotify: Spotify) {
     }

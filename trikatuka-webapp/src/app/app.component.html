@@ -7,13 +7,27 @@
 
   <div class="grid mt-2">
     <div class="col">
-      <p-panel header="User 1">Content</p-panel>
+      <p-card>
+        <ng-template pTemplate="header">
+          <div class="ml-5"><a href="" (click)="this.auth(this.user1Type)">sign in</a></div>
+        </ng-template>
+        <ng-template pTemplate="footer">
+          <div class="text-right">User 1</div>
+        </ng-template>
+      </p-card>
     </div>
     <div class="col">
-      <p-panel header="User 2">Content</p-panel>
+      <p-card>
+        <ng-template pTemplate="header">
+          <div class="ml-5"><a href="" (click)="this.auth(this.user1Type)">sign in</a></div>
+        </ng-template>
+        <ng-template pTemplate="footer">
+          <div class="text-right">User 2</div>
+        </ng-template>
+      </p-card>
     </div>
-
-
   </div>
-  <p-tabMenu [model]="tabs"></p-tabMenu>
+  <p-tabMenu [model]="tabs" [activeItem]="activeItem">
+  </p-tabMenu>
+  <router-outlet></router-outlet>
 </div>

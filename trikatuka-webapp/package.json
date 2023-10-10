@@ -21,6 +21,7 @@
     "primeflex": "^3.3.0",
     "primeng": "^15.2.0",
     "rxjs": "~7.8.0",
+    "trikatuka-spotify-sdk": "../sdk/",
     "tslib": "^2.3.0",
     "zone.js": "~0.12.0"
   },

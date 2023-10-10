@@ -1,4 +1,4 @@
-export default class User {
+export class User {
 
     type: 'SOURCE_USER' | 'TARGET_USER';
     id: string;

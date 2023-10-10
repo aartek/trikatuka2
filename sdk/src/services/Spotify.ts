@@ -1,11 +1,10 @@
 "use strict";
 
 import axios, {AxiosResponse} from 'axios'
-import User from "../model/User";
-import {Params} from "../model/Types";
-import AuthService from "./AuthService";
+import {Params, User} from "../model";
+import {AuthService} from "./AuthService";
 
-export default class Spotify {
+export class Spotify {
 
     url = 'https://api.spotify.com/v1'
 

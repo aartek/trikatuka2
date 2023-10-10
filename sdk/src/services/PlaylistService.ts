@@ -1,15 +1,14 @@
 import Playlist from "../model/Playlist";
 import {paginator} from "./paginator";
-import Spotify from "./Spotify";
-import {OperationResult, Page, Params, Stats} from "../model/Types";
-import User from "../model/User";
+import {Spotify} from "./Spotify";
+import {OperationResult, Page, Params, Stats, User} from "../model";
 import {AxiosResponse} from "axios";
 import Track from "../model/Track";
-import PagesProcessor from "./PagesProcessor";
+import {PagesProcessor} from "./PagesProcessor";
 
 const PLAYLISTS_PATH = '/me/playlists'
 
-export default class PlaylistService {
+export class PlaylistService {
 
     constructor(private readonly spotify: Spotify) {
     }

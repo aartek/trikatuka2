@@ -1,5 +1,5 @@
-import {Params} from "../model/Types";
-import {PlaylistResponse} from "../../test/TestTypes";
+import {Params} from "../src/model/Types";
+import {PlaylistResponse} from "./TestTypes";
 
 
 /**

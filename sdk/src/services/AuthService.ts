@@ -1,17 +1,17 @@
 import axios from "axios";
-import {UserType} from "../model/Types";
-import User from "../model/User";
+import {UserType} from "../model";
+import {User} from "../model";
 
-const REDIRECT_URI = `http://localhost:8080/login.html`
+
 const STATE_KEY = '_state'
 const CODE_VERIFIER_KEY = '_code_verifier'
 const USER_DATA_KEY = '_user_data'
 
 const REFRESH_THRESHOLD_SECONDS = 10 * 60;
 
-export default class AuthService {
+export class AuthService {
 
-    constructor(private readonly clientId) {
+    constructor(private readonly clientId, private redirectUri) {
     }
 
     privileges = ['user-library-read',
@@ -58,7 +58,7 @@ export default class AuthService {
         params.append('show_dialog', "true")
         params.append('client_id', this.clientId)
         params.append('response_type', 'code')
-        params.append('redirect_uri', REDIRECT_URI)
+        params.append('redirect_uri', this.redirectUri)
         params.append('code_challenge_method', 'S256')
         params.append('code_challenge', await generateCodeChallenge(codeVerifier))
         params.append('state', userType + ':' + state)
@@ -71,7 +71,7 @@ export default class AuthService {
         const params = new URLSearchParams();
         params.append('grant_type', 'authorization_code')
         params.append('code', code)
-        params.append('redirect_uri', REDIRECT_URI)
+        params.append('redirect_uri', this.redirectUri)
         params.append('code_verifier', window.localStorage.getItem(`${userType}${CODE_VERIFIER_KEY}`))
         params.append('client_id', this.clientId)
 

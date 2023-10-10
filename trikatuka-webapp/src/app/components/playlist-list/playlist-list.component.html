@@ -1,0 +1,34 @@
+<p-table [value]="items">
+  <ng-template pTemplate="header">
+    <tr>
+      <th></th>
+      <th>#</th>
+      <th>Name</th>
+      <th>Tracks</th>
+      <th>Public</th>
+      <th>Collaborative</th>
+      <th>Owner</th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-playlist>
+    <tr>
+      <td>
+<!--        <checkbox checkboxes="checkboxes" uid="item.id" model="item"></checkbox>-->
+      </td>
+<!--      <td>{{pagination.offset + $index + 1}}.</td>-->
+      <td>{{playlist.name}}</td>
+      <td>{{playlist.tracksCount}}</td>
+      <td>
+        <i class="uk-icon-check" *ngIf="playlist.isPublic"></i>
+        <i class="uk-icon-times" *ngIf="!playlist.isPublic"></i>
+      </td>
+      <td>
+        <i class="uk-icon-check" *ngIf="playlist.collaborative"></i>
+        <i class="uk-icon-times" *ngIf="playlist.collaborative"></i>
+      </td>
+      <td>
+<!--        <owner ng-model="item.owner"></owner>-->
+      </td>
+    </tr>
+  </ng-template>
+</p-table>

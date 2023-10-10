@@ -7,7 +7,7 @@ import {
     generatePlaylistItems,
     generatePlaylistResponse,
     generateUserPlaylistsResponse
-} from "../../src/services/userPlaylists";
+} from "../userPlaylists";
 import {PlaylistResponse} from "../TestTypes";
 import AuthService from "../../src/services/AuthService";
 

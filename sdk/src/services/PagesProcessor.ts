@@ -1,6 +1,6 @@
-import Spotify from "./Spotify";
+import {Spotify} from "./Spotify";
 
-export default class PagesProcessor {
+export class PagesProcessor {
 
     /**
      * Processes paginated data using specified processor and returns object with list of processed successfully and failed items

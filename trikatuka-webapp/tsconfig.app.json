@@ -3,7 +3,7 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "./out-tsc/app",
-    "types": []
+    "types": ["./node_modules/trikatuka-spotify-sdk"]
   },
   "files": [
     "src/main.ts"
