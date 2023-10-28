@@ -1,4 +1,9 @@
-<span>Selected playlists: {{selectedPlaylists.length}} <button (click)="clearSelection()">x</button></span>
+<div class="grid">
+  <div class="col">
+    <div>Selected playlists: {{selectedPlaylists.length}} <button pButton class="p-button-sm p-button-rounded p-button-text" icon="pi pi-times" (click)="clearSelection()"></button></div>
+  
+  </div>
+</div>
 <p-table [value]="items" selectionMode="multiple" [(selection)]="selectedPlaylists" dataKey="id" [paginator]="true" [rows]="10"
   [selectionPageOnly]="true">
   <ng-template pTemplate="header">
@@ -21,16 +26,17 @@
       </td>
       <td>{{rowIndex + 1}}.</td>
       <td>{{playlist.name}}</td>
-      <td>{{playlist.tracksCount}}</td>
+      <td>{{playlist.tracks.total}}</td>
       <td>
-        <i class="uk-icon-check" *ngIf="playlist.isPublic"></i>
-        <i class="uk-icon-times" *ngIf="!playlist.isPublic"></i>
+        <i class="pi pi-check" *ngIf="playlist.isPublic"></i>
+        <i class="pi pi-times" *ngIf="!playlist.isPublic"></i>
       </td>
       <td>
-        <i class="uk-icon-check" *ngIf="playlist.collaborative"></i>
-        <i class="uk-icon-times" *ngIf="playlist.collaborative"></i>
+        <i class="pi pi-check" *ngIf="playlist.collaborative"></i>
+        <i class="pi pi-times" *ngIf="!playlist.collaborative"></i>
       </td>
       <td>
+        {{playlist.owner.name}}
         <!--        <owner ng-model="item.owner"></owner>-->
       </td>
     </tr>

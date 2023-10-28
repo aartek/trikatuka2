@@ -15,6 +15,7 @@ import {AuthService, create, PlaylistService, TrackService} from "trikatuka-spot
 import {CardModule} from "primeng/card";
 
 
+
 const sdkConfig = {
   clientId: '27edb2ed1e2c4c5c8cd7e192c81e37e8',
   redirectUri: window.location.origin,
@@ -36,7 +37,7 @@ const SDK = create(sdkConfig)
     NoopAnimationsModule,
     TableModule,
     ButtonModule,
-    CardModule
+    CardModule,
   ],
   providers: [
     {provide: AuthService, useValue: SDK.authService},
