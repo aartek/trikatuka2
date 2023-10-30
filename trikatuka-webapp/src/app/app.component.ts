@@ -18,8 +18,8 @@ export class AppComponent {
 
   constructor(private authService: AuthService) {
     this.tabs = [
-      {label: 'Playlists', icon: 'pi pi-fw pi-home', routerLink: ['/playlists']},
-      {label: 'Tracks', icon: 'pi pi-fw pi-home', routerLink: ['/tracks']}
+      {label: 'Playlists', icon: 'pi pi-bars', routerLink: ['/playlists']},
+      {label: 'Tracks', icon: 'pi pi-play', routerLink: ['/tracks']}
     ]
 
     this.activeItem = this.tabs[0];
