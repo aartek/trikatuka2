@@ -1,6 +1,7 @@
 "use strict";
 
-import axios, {AxiosResponse} from 'axios'
+import axios from 'axios';
+import { AxiosResponse} from 'axios'
 import {Params, User} from "../model";
 import {AuthService} from "./AuthService";
 

@@ -5,7 +5,7 @@
     "lib": ["ES6", "dom"],
     "moduleResolution": "node",
     "declaration": true,
-    "outDir": "./dist"
+    "outDir": "./dist",
   },
   "include": [
     "src/**/*"

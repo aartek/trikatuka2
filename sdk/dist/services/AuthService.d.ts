@@ -1,5 +1,5 @@
-import { UserType } from "../model";
 import { User } from "../model";
+import { UserType } from "../model/Enums";
 export declare class AuthService {
     private readonly clientId;
     private redirectUri;

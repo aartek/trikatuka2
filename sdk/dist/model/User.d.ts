@@ -1,6 +1,7 @@
+import { UserType } from "./Enums";
 export declare class User {
-    type: 'SOURCE_USER' | 'TARGET_USER';
+    type: UserType;
     id: string;
     data: any;
-    constructor(id: string, data: any, type: 'SOURCE_USER' | 'TARGET_USER');
+    constructor(id: string, data: any, type: UserType);
 }

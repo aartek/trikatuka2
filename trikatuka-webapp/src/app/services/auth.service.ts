@@ -1,17 +1,26 @@
 import {Injectable} from '@angular/core';
 import {Subject} from "rxjs";
-import {AuthService as AS, UserType} from "trikatuka-spotify-sdk";
+import {AuthService as SDKAuthService, UserType} from "trikatuka-spotify-sdk";
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  authorized$: Subject<boolean>;
-  isAuthorized = false;
+  authorized$: Subject<[UserType, boolean]>;
+  private _isAuthorized: {[index: string]: boolean} = {
+    [UserType.]
+  }
+  
+  public get isAuthorized() {
+    return this._isAuthorized;
+  }
+  public set isAuthorized(value) {
+    this._isAuthorized = value;
+  }
 
-  constructor(private readonly authService: AS) {
-    this.authorized$ = new Subject<boolean>();
+  constructor(private readonly authService: SDKAuthService) {
+    this.authorized$ = new Subject<[UserType, boolean]>();
 
     this.authService.handleAuthCallback()
       .then(() => {

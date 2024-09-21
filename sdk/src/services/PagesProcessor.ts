@@ -37,7 +37,7 @@ export class PagesProcessor {
         items.push(...data.items);
 
         if (data.next) {
-            return await PagesProcessor.recursiveLoad(spotify, data.next, user,dataProvider, params, items)
+            return PagesProcessor.recursiveLoad(spotify, data.next, user,dataProvider, params, items)
         } else {
             return items;
         }

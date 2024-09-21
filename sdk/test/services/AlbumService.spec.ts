@@ -1,15 +1,20 @@
-import AlbumService from '../../src/services/AlbumService'
-import Spotify from "../../src/services/Spotify";
+import {AlbumService} from '../../src/services/AlbumService'
+import {Spotify} from "../../src/services/Spotify";
 import {resetAllWhenMocks, when} from 'jest-when'
-import User from "../../src/model/User";
+import {User} from "../../src/model/User";
 import {jest} from "@jest/globals";
+import { UserType } from '../../src/model/Enums';
+import { AuthService } from '../../src/services/AuthService';
 
-const USER1 = new User('user1')
-const USER2 = new User('user2')
+jest.mock("../../src/services/AuthService")
+const authServiceMock = new AuthService("", "")
+
+const USER1 = new User('user1', {}, UserType.SourceUser)
+const USER2 = new User('user2', {}, UserType.TargetUser)
 const ALBUMS_PATH = '/me/albums'
-const spotify = new Spotify();
-const spotifyGetSpy = jest.spyOn(spotify, 'get')
-const spotifyPutSpy = jest.spyOn(spotify, 'put')
+const spotify = new Spotify(authServiceMock);
+const spotifyGetSpy = jest.spyOn(spotify, 'get') as any
+const spotifyPutSpy = jest.spyOn(spotify, 'put') as any
 const albumService = new AlbumService(spotify)
 
 
@@ -43,7 +48,7 @@ describe("Album service", () => {
 
         when(spotifyGetSpy)
             .calledWith(ALBUMS_PATH, USER1, params)
-            .mockResolvedValue(response)
+            .mockReturnValueOnce(response)
 
         //when
         const page = await albumService.loadAlbums(USER1, params)
@@ -83,20 +88,20 @@ describe("Album service", () => {
             .calledWith(ALBUMS_PATH, USER1, expect.objectContaining({
                 limit: 50
             }))
-            .mockResolvedValue(getResponseProvider(50, 0))
+            .mockReturnValueOnce(getResponseProvider(50, 0))
             .calledWith(expect.stringContaining(`${ALBUMS_PATH}?offset=50`), USER1, expect.objectContaining({
                 limit: 50
             }))
-            .mockResolvedValue(getResponseProvider(50, 50))
+            .mockReturnValueOnce(getResponseProvider(50, 50))
             .calledWith(expect.stringContaining(`${ALBUMS_PATH}?offset=100`), USER1, expect.objectContaining({
                 limit: 50
             }))
-            .mockResolvedValue(getResponseProvider(50, 100, false))
+            .mockReturnValueOnce(getResponseProvider(50, 100, false))
 
         when(spotifyPutSpy)
-            .calledWith(ALBUMS_PATH, USER2, expect.objectContaining(putDataProvider(50, 0))).mockResolvedValue("ok")
-            .calledWith(ALBUMS_PATH, USER2, expect.objectContaining(putDataProvider(50, 50))).mockResolvedValue("ok")
-            .calledWith(ALBUMS_PATH, USER2, expect.objectContaining(putDataProvider(50, 100))).mockResolvedValue("ok")
+            .calledWith(ALBUMS_PATH, USER2, expect.objectContaining(putDataProvider(50, 0))).mockReturnValueOnce("ok")
+            .calledWith(ALBUMS_PATH, USER2, expect.objectContaining(putDataProvider(50, 50))).mockReturnValueOnce("ok")
+            .calledWith(ALBUMS_PATH, USER2, expect.objectContaining(putDataProvider(50, 100))).mockReturnValueOnce("ok")
 
         //when
         await albumService.transferAll(USER1, USER2);

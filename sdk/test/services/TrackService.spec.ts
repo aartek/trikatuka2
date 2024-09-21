@@ -1,13 +1,18 @@
-import {jest} from "@jest/globals";
-import {resetAllWhenMocks, when} from "jest-when";
-import User from "../../src/model/User";
-import Spotify from "../../src/services/Spotify";
-import TrackService from "../../src/services/TrackService";
+import { jest } from "@jest/globals";
+import { resetAllWhenMocks, when } from "jest-when";
+import { User } from "../../src/model/User";
+import { Spotify } from "../../src/services/Spotify";
+import { TrackService } from "../../src/services/TrackService";
+import { UserType } from "../../src/model/Enums";
+import { AuthService } from "../../src/services/AuthService";
 
-const USER1 = new User('user1')
-const USER2 = new User('user2')
+jest.mock("../../src/services/AuthService")
+const authServiceMock = new AuthService("", "")
+
+const USER1 = new User('user1', '', UserType.SourceUser)
+const USER2 = new User('user2', '', UserType.TargetUser)
 const TRACKS_PATH = '/me/tracks'
-const spotify = new Spotify();
+const spotify = new Spotify(authServiceMock);
 const spotifyGetSpy = jest.spyOn(spotify, 'get')
 const spotifyPutSpy = jest.spyOn(spotify, 'put')
 const trackService = new TrackService(spotify, 0)
@@ -21,7 +26,7 @@ describe("Track service", () => {
 
     it('should load tracks using params', async () => {
         //given
-        const params = {offset: 10, limit: 20}
+        const params = { offset: 10, limit: 20 }
         const response = {
             data: {
                 items: [...Array(20).keys()].map(i => (
@@ -94,7 +99,7 @@ describe("Track service", () => {
 
         when(spotifyGetSpy)
             .calledWith(TRACKS_PATH, USER1, params)
-            .mockResolvedValue(response)
+            .mockReturnValueOnce(Promise.resolve(response))
 
         //when
         const page = await trackService.loadTracks(USER1, params)
@@ -183,22 +188,22 @@ describe("Track service", () => {
             .calledWith(TRACKS_PATH, USER1, expect.objectContaining({
                 limit: 50
             }))
-            .mockResolvedValue(getResponseProvider(50, 0))
+            .mockReturnValueOnce(Promise.resolve(getResponseProvider(50, 0)))
             .calledWith(expect.stringContaining(`${TRACKS_PATH}?offset=50`), USER1, expect.objectContaining({
                 limit: 50
             }))
-            .mockResolvedValue(getResponseProvider(50, 50))
+            .mockReturnValueOnce(Promise.resolve(getResponseProvider(50, 50)))
             .calledWith(expect.stringContaining(`${TRACKS_PATH}?offset=100`), USER1, expect.objectContaining({
                 limit: 50
             }))
-            .mockResolvedValue(getResponseProvider(50, 100, false))
+            .mockReturnValueOnce(Promise.resolve(getResponseProvider(50, 100, false)))
 
 
         for (let i = 0; i < 150; i++) {
             when(spotifyPutSpy)
                 .calledWith(TRACKS_PATH, USER2, expect.objectContaining(
-                    {ids: [`track${i}`]}
-                )).mockResolvedValueOnce("ok")
+                    { ids: [`track${i}`] }
+                )).mockReturnValueOnce(Promise.resolve("ok"))
         }
 
         //when
@@ -206,7 +211,7 @@ describe("Track service", () => {
 
         //then
         for (let i = 0; i < 150; i++) {
-            expect(spotifyPutSpy).toBeCalledWith(TRACKS_PATH, USER2, expect.objectContaining({ids: [`track${i}`]}))
+            expect(spotifyPutSpy).toBeCalledWith(TRACKS_PATH, USER2, expect.objectContaining({ ids: [`track${i}`] }))
         }
     })
 })

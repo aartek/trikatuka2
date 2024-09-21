@@ -1,22 +1,23 @@
-import Spotify from "../../src/services/Spotify";
-import {resetAllWhenMocks, when} from 'jest-when'
-import User from "../../src/model/User";
-import {jest} from "@jest/globals";
-import ArtistService from "../../src/services/ArtistService";
+import { Spotify } from "../../src/services/Spotify";
+import { resetAllWhenMocks, when } from 'jest-when'
+import { User } from "../../src/model/User";
+import { jest } from "@jest/globals";
+import { ArtistService } from "../../src/services/ArtistService";
 import Artist from "../../src/model/Artist";
-import AuthService from "../../src/services/AuthService";
+import { AuthService } from "../../src/services/AuthService";
+import { UserType } from "../../src/model/Enums";
 
 jest.mock("../../src/services/AuthService")
 
-const USER1 = new User('user1', {}, 'SOURCE_USER')
-const USER2 = new User('user2', {}, "TARGET_USER")
+const USER1 = new User('user1', {}, UserType.SourceUser)
+const USER2 = new User('user2', {}, UserType.TargetUser)
 const ARTISTS_PATH = '/me/following?type=artist'
 
-const authServiceMock = new AuthService("")
+const authServiceMock = new AuthService("", "")
 
 const spotify = new Spotify(authServiceMock);
-const spotifyGetSpy = jest.spyOn(spotify, 'get')
-const spotifyPutSpy = jest.spyOn(spotify, 'put')
+const spotifyGetSpy = jest.spyOn(spotify, 'get') as any
+const spotifyPutSpy = jest.spyOn(spotify, 'put') as any
 const artistService = new ArtistService(spotify)
 
 
@@ -31,7 +32,7 @@ describe("Artist service", () => {
 
         //given
         const after = 'abc123'
-        const params = {limit: 20}
+        const params = { limit: 20 }
         const response = {
             data: {
                 artists: {
@@ -49,14 +50,14 @@ describe("Artist service", () => {
         }
 
         when(spotifyGetSpy)
-            .calledWith(ARTISTS_PATH, USER1, {limit: 20, after: after})
-            .mockResolvedValue(response)
+            .calledWith(ARTISTS_PATH, USER1, { limit: 20, after: after })
+            .mockReturnValueOnce(response)
 
         //when
         const page = await artistService.loadArtists(USER1, params, after)
 
         //then
-        expect(spotifyGetSpy).toBeCalledWith(ARTISTS_PATH, USER1, {limit: 20, after: after})
+        expect(spotifyGetSpy).toBeCalledWith(ARTISTS_PATH, USER1, { limit: 20, after: after })
         expect(page.items.length).toBe(20)
         expect(page.total).toBe(100)
         expect(page.items[0]).toEqual(new Artist('artist0', 'Artist 0'))
@@ -82,27 +83,27 @@ describe("Artist service", () => {
         })
 
         const putDataProvider = (count, from) => {
-            return {ids: ([...Array(count).keys()].map(i => `artist${i + from}`))}
+            return { ids: ([...Array(count).keys()].map(i => `artist${i + from}`)) }
         }
 
         when(spotifyGetSpy)
             .calledWith(ARTISTS_PATH, USER1, expect.objectContaining({
                 limit: 50
             }))
-            .mockResolvedValue(getResponseProvider(50, 0, 'artist50'))
+            .mockReturnValueOnce(getResponseProvider(50, 0, 'artist50'))
             .calledWith(expect.stringContaining(`${ARTISTS_PATH}&after=artist50`), USER1, expect.objectContaining({
                 limit: 50
             }))
-            .mockResolvedValue(getResponseProvider(50, 50, 'artist100'))
+            .mockReturnValueOnce(getResponseProvider(50, 50, 'artist100'))
             .calledWith(expect.stringContaining(`${ARTISTS_PATH}&after=artist100`), USER1, expect.objectContaining({
                 limit: 50
             }))
-            .mockResolvedValue(getResponseProvider(50, 100, '', false))
+            .mockReturnValueOnce(getResponseProvider(50, 100, '', false))
 
         when(spotifyPutSpy)
-            .calledWith(ARTISTS_PATH, USER2, expect.objectContaining(putDataProvider(50, 0))).mockResolvedValue("ok")
-            .calledWith(ARTISTS_PATH, USER2, expect.objectContaining(putDataProvider(50, 50))).mockResolvedValue("ok")
-            .calledWith(ARTISTS_PATH, USER2, expect.objectContaining(putDataProvider(50, 100))).mockResolvedValue("ok")
+            .calledWith(ARTISTS_PATH, USER2, expect.objectContaining(putDataProvider(50, 0))).mockReturnValueOnce("ok")
+            .calledWith(ARTISTS_PATH, USER2, expect.objectContaining(putDataProvider(50, 50))).mockReturnValueOnce("ok")
+            .calledWith(ARTISTS_PATH, USER2, expect.objectContaining(putDataProvider(50, 100))).mockReturnValueOnce("ok")
 
         //when
         await artistService.transferAll(USER1, USER2);

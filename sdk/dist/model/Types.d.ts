@@ -22,4 +22,3 @@ export type Page<A> = {
 export type AuthData = {
     accessToken: string;
 };
-export type UserType = 'SOURCE_USER' | 'TARGET_USER';

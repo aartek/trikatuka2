@@ -1,6 +1,6 @@
 import axios from "axios";
-import {UserType} from "../model";
 import {User} from "../model";
+import { UserType } from "../model/Enums";
 
 
 const STATE_KEY = '_state'
