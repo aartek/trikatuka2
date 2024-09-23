@@ -1,6 +1,6 @@
 "use strict";
 
-angular.module('trikatuka2').factory('User', function (mySocket, Spotify, $sessionStorage, $rootScope, $http, $q) {
+angular.module('trikatuka2').factory('User', function (Spotify, $sessionStorage, $rootScope, AuthService) {
     function User(id, authData) {
         this.authData = authData;
         this.data = null;
@@ -13,24 +13,18 @@ angular.module('trikatuka2').factory('User', function (mySocket, Spotify, $sessi
 
     User.prototype.login = function(){
         var self = this;
-        var signingProccessId = guid().toString();
 
-        mySocket.on('user_logged_in', function (data) {
-            if (signingProccessId === data.signingProccessId) {
-                self.authData = data;
+        AuthService.authorize(self.id)
+
+        window.userLoggedIn = function(data) {
+            self.authData = data;
                 self.authData.expiresAt = new Date().getTime() + (self.authData.expires_in * 1000);
                 self.fetchData().then(function(){
                     $sessionStorage[self.id] = self.authData;
                     self.loggedIn = true;
                     $rootScope.$broadcast('USER_LOGGED_IN', self);
                 });
-            }
-        });
-
-        var wnd =  window.open('', '', "width=800, height=600, scrollbars=yes");
-        mySocket.emit('login', signingProccessId, function (url) {
-            wnd.location.href=url;
-        });
+        } 
     };
 
     User.prototype.fetchData = function(){
@@ -55,30 +49,15 @@ angular.module('trikatuka2').factory('User', function (mySocket, Spotify, $sessi
         return this.data.id;
     };
 
-    User.prototype.refreshToken = function(){
-        var self = this;
-        var deferred = $q.defer();
+    User.prototype.refreshToken = async function(){
 
-        mySocket.emit('refreshToken', self.authData.refresh_token, function(response){
-            self.authData = response;
-            self.authData.expiresAt = new Date().getTime() + (self.authData.expires_in * 1000);
-            $sessionStorage[self.id] = self.authData;
-            deferred.resolve(self);
-        });
+        var response = await AuthService.refreshToken(this.authData.refresh_token)
 
-        return deferred.promise;
+        this.authData = response;
+        this.authData.expiresAt = new Date().getTime() + (this.authData.expires_in * 1000);
+        $sessionStorage[this.id] = this.authData;
+        return this;
     };
-
-    function guid() {
-        function s4() {
-            return Math.floor((1 + Math.random()) * 0x10000)
-                .toString(16)
-                .substring(1);
-        }
-        return s4() + s4() + + s4() +  s4() +  +
-            s4() + + s4() + s4() + s4();
-    }
 
     return User;
 });
-//# sourceURL=User.js

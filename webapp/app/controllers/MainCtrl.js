@@ -14,4 +14,3 @@ angular.module('trikatuka2').controller('MainCtrl', function ($scope, users){
         self.viewDisabled = false;
     });
 });
-//# sourceURL=MainCtrl.js

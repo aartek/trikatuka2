@@ -63,4 +63,3 @@ angular.module('trikatuka2').factory('Checkboxes', function () {
 
     return Checkboxes;
 });
-//# sourceURL=Checkboxes.js

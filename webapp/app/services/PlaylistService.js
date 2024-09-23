@@ -42,4 +42,3 @@ angular.module('trikatuka2').service('PlaylistService', function (Spotify, $q, R
         return RequestHelper.doAction('add',promises);
     }
 });
-//# sourceURL=PlaylistService.js

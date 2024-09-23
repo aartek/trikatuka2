@@ -1,11 +1,96 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <script>
-        window.close();
+
+        (async function () {
+            var body = await fetch('config.json')
+            var config = await body.json()
+
+            const STATE_KEY = '_state'
+            const CODE_VERIFIER_KEY = '_code_verifier'
+            const USER_DATA_KEY = '_user_data'
+
+            async function requestAccessToken(userType, code) {
+                const payload = {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        client_id: config.clientId,
+                        grant_type: 'authorization_code',
+                        code,
+                        redirect_uri: config.redirectUri,
+                        code_verifier: window.sessionStorage.getItem(`${userType}${CODE_VERIFIER_KEY}`),
+                    }),
+                }
+
+                const url = 'https://accounts.spotify.com/api/token';
+
+                try {
+                    const body = await fetch(url, payload);
+                    const response = await body.json();
+                    return response
+                } catch (e) {
+                    throw new Error('Auth error')
+                }
+            }
+
+            async function handleAuthCallback() {
+                const currentTime = Date.now()
+                const { code, userType, state } = handleAuthorizationCodeResponse()
+
+                if (code) {
+                    const storedState = window.sessionStorage.getItem(`${userType}${STATE_KEY}`)
+                    if (storedState !== state) {
+                        throw new Error(`State doesn't match for user type ${userType}`)
+                    }
+                    const authData = await requestAccessToken(userType, code)
+                    authData.expiresAt = new Date(currentTime + (authData.expires_in * 1000));
+                    console.log('expires at', authData.expiresAt)
+
+                    // const user = await axios.get('https://api.spotify.com/v1/me', {
+                    //     headers: { 'Authorization': `${authData.token_type} ${authData.access_token}` },
+                    // }).then(response => new User(response.data.id, response.data, userType))
+
+                    const config = {
+                        method: 'GET',
+                        headers: { 'Authorization': `${authData.token_type} ${authData.access_token}` },
+                    }
+
+                    const body = await fetch('https://api.spotify.com/v1/me', config);
+                    const user = await body.json();
+                    storeUser(user, authData)
+                    window.opener.userLoggedIn(authData)
+                }
+            }
+
+            function handleAuthorizationCodeResponse() {
+                const url = new URL(location.href)
+                const params = url.searchParams
+                const code = params.get('code')
+                const returnedState = params.get('state')
+                const userType = returnedState?.split(':')[0]
+                const state = returnedState?.replace(userType + ':', '')
+                return { code, userType, state }
+            }
+
+
+            function storeUser(user, authData) {
+                window.sessionStorage.setItem(`${user.type}${USER_DATA_KEY}`, JSON.stringify({ user, authData }))
+            }
+
+            await handleAuthCallback();
+            window.close();
+        })();
+
     </script>
 </head>
+
 <body>
 </body>
+
 </html>

@@ -1,36 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <title>Trikatuka - Spotify migration tool</title>
+    <title>Trikatuka - migration tool for Spotify &trade;</title>
 
-    <script src="dist/libs.min.js"></script>
+    <script src="dist/libs.js"></script>
     <link rel="stylesheet" href="css/uikit.min.css">
 
     <style>
-        .tr-panel-box-title{
+        .tr-panel-box-title {
             position: absolute;
             bottom: 0px;
             right: 5px;
         }
+
         .uk-tab>li>a,
-        .uk-tab>li>a:hover{
+        .uk-tab>li>a:hover {
             color: #444;
         }
-        .uk-navbar-brand a{
-            color:white;
+
+        .uk-navbar-brand a {
+            color: white;
             text-decoration: none;
         }
-        .tr-help:hover{
+
+        .tr-help:hover {
             color: #bbb;
         }
     </style>
 
     <script>
-        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-                    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-                m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+        (function (i, s, o, g, r, a, m) {
+            i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+                (i[r].q = i[r].q || []).push(arguments)
+            }, i[r].l = 1 * new Date(); a = s.createElement(o),
+                m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+        })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
 
         ga('create', 'UA-66669138-2', 'auto');
         ga('send', 'pageview');
@@ -38,97 +44,139 @@
     </script>
 
 </head>
-<body>
-<div id="app" data-uk-observe style="visibility: hidden">
-    <nav class="uk-navbar" style="background: #292929">
-        <div class="uk-container uk-container-center">
-        <span class="uk-navbar-brand uk-float-right"><a class="tr-help" href="#/help"><i class="uk-icon-question-circle"></i></a></span>
-        <span class="uk-navbar-brand" style="color: #fff">
-            <a href="#/">Trikatuka</a>
-            <span class="uk-text-small" style="color:#aaa;">Spotify migration tool</span></span>
-        </div>
-    </nav>
-    <div class="uk-container uk-container-center">
-        <div class="uk-margin-top">
-            <div class="uk-grid uk-margin-bottom" ng-controller="LoginCtrl">
-                <div class="uk-width-1-2">
-                    <div class="uk-panel uk-panel-box" style="min-height: 50px">
-                        <img ng-src="{{user1.data.images[0].url}}" alt="" style="max-height: 50px; max-width: 50px;"
-                             ng-if="user1.data.images[0].url">
-                        <img src="http://www.placecage.com/g/200/200" alt="" style="max-height: 50px; max-width: 50px;"
-                             ng-if="user1.data && !user1.data.images[0].url">
-                        <span class="uk-margin-small-left">{{user1.data.display_name || user1.data.id}}</span>
-                    <span ng-hide="viewDisabled">
-                        <a href="" ng-click="user1.login()" ng-if="!user1.authData">sign in</a>
-                        <a href="" ng-click="user1.logout()" ng-if="user1.authData">sign out</a>
-                    </span>
 
-                        <div class="tr-panel-box-title uk-text-muted"><i class="uk-icon-user uk-margin-small-right"></i>Old
-                            user
+<body>
+    <div id="app" data-uk-observe style="visibility: hidden">
+        <nav class="uk-navbar" style="background: #292929">
+            <div class="uk-container uk-container-center">
+                <span class="uk-navbar-brand uk-float-right"><a class="tr-help" href="#/help"><i
+                            class="uk-icon-question-circle"></i></a></span>
+                <span class="uk-navbar-brand" style="color: #fff">
+                    <a href="#/">Trikatuka</a>
+                    <span class="uk-text-small" style="color:#aaa;">Migration tool for Spotify</span></span>
+            </div>
+        </nav>
+        <div class="uk-container uk-container-center">
+            <div class="uk-margin-top">
+                <div class="uk-grid uk-margin-bottom" ng-controller="LoginCtrl">
+                    <div class="uk-width-1-2">
+                        <div class="uk-panel uk-panel-box" style="min-height: 50px">
+                            <img ng-src="{{user1.data.images[0].url}}" alt="" style="max-height: 50px; max-width: 50px;"
+                                ng-if="user1.data.images[0].url">
+                            <img src="images/profile.svg" alt="Profile picture"
+                                style="max-height: 50px; max-width: 50px;"
+                                ng-if="user1.data && !user1.data.images[0].url">
+                            <span class="uk-margin-small-left">{{user1.data.display_name || user1.data.id}}</span>
+                            <span ng-hide="viewDisabled">
+                                <a href="" ng-click="user1.login()" ng-if="!user1.authData">sign in</a>
+                                <a href="" ng-click="user1.logout()" ng-if="user1.authData">sign out</a>
+                            </span>
+
+                            <div class="tr-panel-box-title uk-text-muted"><i
+                                    class="uk-icon-user uk-margin-small-right"></i>Old
+                                user
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="uk-width-1-2">
-                    <div class="uk-panel uk-panel-box" style="min-height: 50px">
-                        <div class="tr-panel-box-title uk-text-muted"><i class="uk-icon-user uk-margin-small-right"></i>New
-                            user
+                    <div class="uk-width-1-2">
+                        <div class="uk-panel uk-panel-box" style="min-height: 50px">
+                            <div class="tr-panel-box-title uk-text-muted"><i
+                                    class="uk-icon-user uk-margin-small-right"></i>New
+                                user
+                            </div>
+                            <img ng-src="{{user2.data.images[0].url}}" alt="" style="max-height: 50px; max-width: 50px;"
+                                ng-if="user2.data.images[0].url">
+                            <img src="images/profile.svg" alt="" style="max-height: 50px; max-width: 50px;"
+                                ng-if="user2.data && !user2.data.images[0].url">
+                            <span class="uk-margin-small-left">{{user2.data.display_name || user2.data.id}}</span>
+                            <span ng-hide="viewDisabled">
+                                <a href="" ng-click="user2.login()" ng-if="!user2.authData">sign in</a>
+                                <a href="" ng-click="user2.logout()" ng-if="user2.authData">sign out</a>
+                            </span>
                         </div>
-                        <img ng-src="{{user2.data.images[0].url}}" alt="" style="max-height: 50px; max-width: 50px;"
-                             ng-if="user2.data.images[0].url">
-                        <img src="http://www.placecage.com/c/100/100" alt="" style="max-height: 50px; max-width: 50px;"
-                             ng-if="user2.data && !user2.data.images[0].url">
-                        <span class="uk-margin-small-left">{{user2.data.display_name || user2.data.id}}</span>
-                    <span ng-hide="viewDisabled">
-                        <a href="" ng-click="user2.login()" ng-if="!user2.authData">sign in</a>
-                        <a href="" ng-click="user2.logout()" ng-if="user2.authData">sign out</a>
-                    </span>
                     </div>
                 </div>
             </div>
+            <div class="uk-grid" ng-view></div>
         </div>
-        <div class="uk-grid" ng-view></div>
-    </div>
-    <div class="uk-width-1-1 uk-text-center uk-margin-top">
-        <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-        <!-- trikatuka -->
-        <ins class="adsbygoogle"
-             style="display:inline-block;width:728px;height:90px"
-             data-ad-client="ca-pub-9007960458261252"
-             data-ad-slot="2734653062"></ins>
-        <script>
-            (adsbygoogle = window.adsbygoogle || []).push({});
-        </script>
-    </div>
-    <div class="uk-text-muted" style="margin-top:30px;">
-        <div class="uk-container uk-container-center uk-text-right"
-             style="padding-top: 3px;font-family: monospace;font-size: small;">
-        <span style="border-top: 1px dashed;  display: inline-block; padding-left: 25px;">
-            If you found it useful <a href="https://paypal.me/aartek" target="_blank">you can buy me a beer</a> | Trikatuka v2.5 by <a
-                href="http://aknowakowski.blogspot.com" target="_blank">akn</a></span>
+        <div class="uk-width-1-1 uk-text-center uk-margin-top">
+            <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+            <!-- trikatuka -->
+            <ins class="adsbygoogle" style="display:inline-block;width:728px;height:90px"
+                data-ad-client="ca-pub-9007960458261252" data-ad-slot="2734653062"></ins>
+            <script>
+                (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+        <div class="uk-text-muted" style="margin-top:30px;">
+            <div class="uk-container uk-container-center uk-text-right"
+                style="padding-top: 3px;font-family: monospace;font-size: small;">
+                <span style="border-top: 1px dashed;  display: inline-block; padding-left: 25px;">
+                    If you found it useful <a href="https://paypal.me/aartek" target="_blank">you can buy me a beer</a>
+                    | Trikatuka v2.6 by <a href="http://aknowakowski.blogspot.com" target="_blank">akn</a></span>
+            </div>
         </div>
     </div>
-</div>
-<script type="text/javascript">
-    jQuery(document).on('ready',function(){
-        jQuery.get('files', function(response){
+    <script type="text/javascript">
+        jQuery(document).on('ready', async function () {
+
+            var body = await fetch('config.json')
+            window.trikatukaConfig = await body.json()
+
+            if (window.trikatukaConfig.env == 'DEV') {
+
+                const files = [
+                    "app/app.js",
+                    "app/controllers/AlbumListCtrl.js",
+                    "app/controllers/ArtistListCtrl.js",
+                    "app/controllers/LoginCtrl.js",
+                    "app/controllers/MainCtrl.js",
+                    "app/controllers/PlaylistListCtrl.js",
+                    "app/controllers/TrackListCtrl.js",
+                    "app/directives/checkbox.js",
+                    "app/directives/owner.js",
+                    "app/factories/Album.js",
+                    "app/factories/Artist.js",
+                    "app/factories/Checkboxes.js",
+                    "app/factories/Pagination.js",
+                    "app/factories/Playlist.js",
+                    "app/factories/Track.js",
+                    "app/factories/User.js",
+                    "app/services/AlbumService.js",
+                    "app/services/ArtistService.js",
+                    "app/services/AuthService.js",
+                    "app/services/PlaylistService.js",
+                    "app/services/RequestHelper.js",
+                    "app/services/Spotify.js",
+                    "app/services/TrackService.js",
+                    "app/services/users.js"
+                ]
+
+                var head = $('head');
+                angular.forEach(files, function (item) {
+                    head.append('<script src="' + item + '" type="application/javascript">');
+                });
+            }
+            else {
+                var script = document.createElement('script');
+                script.src = 'dist/app.js';
+                script.onload = function() {
+                    angular.bootstrap($('#app'), ['trikatuka2']);
+                }
+                document.head.appendChild(script);
+                
+            }
             var appDiv = $('#app');
+            appDiv.css({ visibility: 'visible' });
 
-            var head= $('head');
-            angular.forEach(response, function(item){
-                head.append('<script src="' + item + '" type="application/javascript">');
+            jQuery.fn.cookiesEU({
+                text: 'This website makes use of cookies to enhance browsing experience and provide additional functionality. By closing this message you give your permission to this website to store small bits of data as on your device.',
+                position: 'top',
+                auto_accept: false
             });
-
-            appDiv.css({visibility:'visible'});
-            angular.bootstrap(appDiv, ['trikatuka2']);
-        }, 'json');
-
-        jQuery.fn.cookiesEU({
-            text: 'This website makes use of cookies to enhance browsing experience and provide additional functionality. By closing this message you give your permission to this website to store small bits of data as on your device.',
-            position: 'top',
-            auto_accept: false
         });
-    });
 
-</script>
+    </script>
 </body>
+
 </html>

@@ -41,3 +41,11 @@ envs
 tmp
 
 webapp/dist/
+
+webapp/config.json
+
+public
+
+.firebase/
+
+.DS_Store

@@ -63,4 +63,3 @@ angular.module('trikatuka2').service('Spotify', function ($http, $q) {
         };
     }
 });
-//# sourceURL=Spotify.js

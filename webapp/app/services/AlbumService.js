@@ -18,7 +18,7 @@ angular.module('trikatuka2').service('AlbumService', function (Spotify, $q, Requ
             this.items = items;
 
             this.transfer = function () {
-                return Spotify.put(url, targetUser, this.items);
+                return Spotify.put(url, targetUser, {ids: this.items});
             }
         }
 
@@ -88,4 +88,3 @@ angular.module('trikatuka2').service('AlbumService', function (Spotify, $q, Requ
         });
     }
 });
-//# sourceURL=AlbumService.js

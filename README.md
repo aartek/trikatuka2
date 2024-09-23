@@ -1,4 +1,4 @@
-# Trikatuka - Spotify migration tool
+# Trikatuka - migration tool for Spotify
 
 **Trikatuka** is a tool helping transfer Spotify playlists and saved tracks from one account to another.
 
@@ -12,39 +12,22 @@ How to: http://aknowakowski.blogspot.com/p/trikatuka2.html
 
 ## For developers
 
-Project is based on `Node.js` and `AngularJS 1.5`
+Project is based on `AngularJS 1.5`
 
-You need to create an app on https://developer.spotify.com/ and get `clientId` and `clientSecret`. You must also add `http://localhost:<PORT>/user_auth_callback` to the urls whitelist.
+You need to create an app on https://developer.spotify.com/ and get `clientId`. You must also add `http://localhost:<PORT>/afterLogin` to the urls whitelist.
 
 **How to run**
-- set env variables
-  - `CLIENT_ID=<clientId>`
-  - `CLIENT_SECRET=<clientSecret>`
-  - `TRIKATUKA_PORT=<port>`
-  - Optionally set `NODE_ENV=dev` if you want to run app in development mode (for debuggable angular app's sources)
+- optionally change port in `package.json` in `start` command
+- set clientId and redirect uri variables in `config.dev.json`
 - `npm install`
-- `npm run build`
-- `node server.js`
+- `npm start`
 - Navigate to `http://localhost:<PORT>`
 
-**Run with docker**
-
-Build image
-```
-docker build -t trikatuka2 .
-```
-
-Run
-```
-docker run -d --network host --name trikatuka2 --restart unless-stopped \
-                         -e CLIENT_ID='xxxx' \
-                         -e CLIENT_SECRET=xxxx \
-                         -e TRIKATUKA_PORT=<PORT> \
-                         trikatuka2
-```
-(`--net host` is required. Otherwise socket.io won't work correctly.)
-
 ## Changelog
+### 2.6 (2024/09/23)
+- Fixed tracks and albums transfer
+- App is now fully client side!
+
 ### 2.5
 - Transfer playlists in the same order
 

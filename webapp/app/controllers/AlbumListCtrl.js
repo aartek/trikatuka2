@@ -1,7 +1,6 @@
 "use strict";
 
-angular.module('trikatuka2').controller('AlbumListCtrl', function ($scope, $resource, users, Spotify, Pagination,
-    Checkboxes, AlbumService, Album, $rootScope, $q, RequestHelper) {
+angular.module('trikatuka2').controller('AlbumListCtrl', function ($scope, users, Pagination, AlbumService, Album, $rootScope) {
 
 
         var pagination = $scope.pagination = new Pagination();
@@ -52,4 +51,4 @@ angular.module('trikatuka2').controller('AlbumListCtrl', function ($scope, $reso
             }
         });
     });
-    //# sourceURL=AlbumListCtrl.js
+    

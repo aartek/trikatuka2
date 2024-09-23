@@ -9,11 +9,12 @@ angular.module('trikatuka2').directive('owner', function($http){
         scope:{},
         link: function(scope,elem,attrs,ngModel){
             ngModel.$render = function(){
-                $http.get(ngModel.$modelValue.href).then(function(response){
-                    scope.owner = response.data;
-                });
+                scope.owner=ngModel.$modelValue
+
+                // $http.get(ngModel.$modelValue.href).then(function(response){
+                //     scope.owner = response.data;
+                // });
             };
         }
     }
 });
-//# sourceURL=owner.js

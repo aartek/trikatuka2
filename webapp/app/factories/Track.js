@@ -1,6 +1,6 @@
 "use strict";
 
-angular.module('trikatuka2').factory('Track', function(Spotify ,$q, TrackService){
+angular.module('trikatuka2').factory('Track', function(){
     this.playlistId = null;
     this.tracksCount = null;
     this.name = null;
@@ -18,4 +18,3 @@ angular.module('trikatuka2').factory('Track', function(Spotify ,$q, TrackService
     return Track;
 
 });
-//# sourceURL=Track.js

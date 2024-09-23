@@ -32,4 +32,3 @@ angular.module('trikatuka2').service('RequestHelper', function ($q) {
     }
 
 });
-//# sourceURL=RequestHelper.js

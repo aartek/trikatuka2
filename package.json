@@ -1,26 +1,15 @@
 {
   "name": "starter-node-angular",
-  "main": "server.js",
   "scripts": {
-    "build": "node_modules/.bin/grunt"
+    "build": "node_modules/.bin/grunt && rm -rf ./public && cp -r ./webapp ./public && cp config.prod.json ./public/config.json",
+    "start": "cp config.dev.json webapp/config.json && node_modules/.bin/grunt && http-server -p 8080 webapp"
   },
   "dependencies": {
-    "body-parser": "~1.0.0",
-    "config": "^1.19.0",
-    "express": "^4.15.4",
-    "glob": "^7.0.3",
-    "http": "0.0.0",
-    "js-base64": "^2.3.2",
-    "method-override": "~1.0.0",
-    "morgan": "~1.0.0",
-    "path": "^0.12.7",
-    "querystring": "^0.2.0",
-    "request": "^2.69.0",
-    "socket.io": "^1.4.5"
   },
   "devDependencies": {
-    "grunt": "^1.0.1",
-    "grunt-contrib-concat": "^1.0.1",
-    "grunt-contrib-uglify": "^3.1.0"
+    "grunt": "1.0.1",
+    "grunt-contrib-concat": "1.0.1",
+    "grunt-contrib-uglify": "3.1.0",
+    "http-server": "^14.1.1"
   }
 }

@@ -1,7 +1,7 @@
 "use strict";
 
-angular.module('trikatuka2').controller('ArtistListCtrl', function ($scope, $resource, users, Spotify, Pagination,
-                                                                    Checkboxes, ArtistService, Artist, $rootScope, $q, RequestHelper) {
+angular.module('trikatuka2').controller('ArtistListCtrl', function ($scope, users, Pagination,
+    ArtistService, Artist, $rootScope) {
 
     var pagination;
     $scope.items = [];
@@ -62,4 +62,3 @@ angular.module('trikatuka2').controller('ArtistListCtrl', function ($scope, $res
         }
     });
 });
-//# sourceURL=ArtistListCtrl.js

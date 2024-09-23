@@ -100,4 +100,3 @@ angular.module('trikatuka2').service('ArtistService', function (Spotify, $q, Req
         });
     }
 });
-//# sourceURL=ArtistService.js

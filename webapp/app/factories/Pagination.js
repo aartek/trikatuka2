@@ -74,4 +74,3 @@ angular.module('trikatuka2').factory('Pagination', function () {
     return Pagination;
 
 });
-//# sourceURL=Pagination.js
