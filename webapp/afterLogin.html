@@ -23,7 +23,7 @@
                         client_id: config.clientId,
                         grant_type: 'authorization_code',
                         code,
-                        redirect_uri: config.redirectUri,
+                        redirect_uri: window.location.origin + '/afterLogin',
                         code_verifier: window.sessionStorage.getItem(`${userType}${CODE_VERIFIER_KEY}`),
                     }),
                 }

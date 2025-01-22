@@ -6,9 +6,9 @@
 - *Public* and *private* playlists are copied.
 - Subscribed playlists are followed.
 
-**Production app is available here:** http://trikatuka.aknakn.eu
+**Production app is available here:** https://trikatuka.aknakn.eu
 
-How to: http://aknowakowski.blogspot.com/p/trikatuka2.html
+How to: https://aknowakowski.blogspot.com/p/trikatuka2.html
 
 ## For developers
 
@@ -18,12 +18,17 @@ You need to create an app on https://developer.spotify.com/ and get `clientId`. 
 
 **How to run**
 - optionally change port in `package.json` in `start` command
-- set clientId and redirect uri variables in `config.dev.json`
+- set clientId in `config.dev.json`
 - `npm install`
 - `npm start`
 - Navigate to `http://localhost:<PORT>`
 
 ## Changelog
+
+### 2.7 (2024/01/22)
+- Added podcasts
+- Added experimental feature to keep favorite tracks order (please report if it fails) 
+
 ### 2.6 (2024/09/23)
 - Fixed tracks and albums transfer
 - App is now fully client side!

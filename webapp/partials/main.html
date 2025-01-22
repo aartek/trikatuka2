@@ -2,15 +2,16 @@
     <ul class="uk-tab" data-uk-tab="{connect:'#my-id'}">
         <li><a href=""><i class="uk-icon-list uk-margin-small-right"></i>Playlists</a></li>
         <li><a href=""><i class="uk-icon-music uk-margin-small-right"></i>Tracks</a></li>
-        <li><a href=""><i class="uk-icon-music uk-margin-small-right"></i>Albums</a></li>
-        <li><a href=""><i class="uk-icon-music uk-margin-small-right"></i>Artists</a></li>
+        <li><a href=""><i class="uk-icon-book uk-margin-small-right"></i>Albums</a></li>
+        <li><a href=""><i class="uk-icon-star uk-margin-small-right"></i>Artists</a></li>
+        <li><a href=""><i class="uk-icon-globe uk-margin-small-right"></i>Podcasts</a></li>
     </ul>
     <ul id="my-id" class="uk-switcher uk-margin">
         <li><div ng-include="'partials/playlistList.html'" ng-controller="PlaylistListCtrl"></div></li>
         <li><div ng-include="'partials/tracksList.html'" ng-controller="TrackListCtrl"></div></li>
         <li><div ng-include="'partials/albumsList.html'" ng-controller="AlbumListCtrl"></div></li>
         <li><div ng-include="'partials/artistsList.html'" ng-controller="ArtistListCtrl"></div></li>
-
+        <li><div ng-include="'partials/podcastsList.html'" ng-controller="PodcastListCtrl"></div></li>
     </ul>
 
 </div>

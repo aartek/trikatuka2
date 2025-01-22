@@ -29,19 +29,8 @@
             color: #bbb;
         }
     </style>
-
-    <script>
-        (function (i, s, o, g, r, a, m) {
-            i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
-                (i[r].q = i[r].q || []).push(arguments)
-            }, i[r].l = 1 * new Date(); a = s.createElement(o),
-                m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
-        })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
-
-        ga('create', 'UA-66669138-2', 'auto');
-        ga('send', 'pageview');
-
-    </script>
+    <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9007960458261252"
+        crossorigin="anonymous"></script> -->
 
 </head>
 
@@ -100,20 +89,22 @@
             <div class="uk-grid" ng-view></div>
         </div>
         <div class="uk-width-1-1 uk-text-center uk-margin-top">
-            <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-            <!-- trikatuka -->
+            <!-- <script async
+                src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9007960458261252"
+                crossorigin="anonymous"></script>
             <ins class="adsbygoogle" style="display:inline-block;width:728px;height:90px"
                 data-ad-client="ca-pub-9007960458261252" data-ad-slot="2734653062"></ins>
             <script>
                 (adsbygoogle = window.adsbygoogle || []).push({});
-            </script>
+            </script> -->
         </div>
         <div class="uk-text-muted" style="margin-top:30px;">
             <div class="uk-container uk-container-center uk-text-right"
                 style="padding-top: 3px;font-family: monospace;font-size: small;">
                 <span style="border-top: 1px dashed;  display: inline-block; padding-left: 25px;">
                     If you found it useful <a href="https://paypal.me/aartek" target="_blank">you can buy me a beer</a>
-                    | Trikatuka v2.6 by <a href="http://aknowakowski.blogspot.com" target="_blank">akn</a></span>
+                    | <a href="privacypolicy.html" target="_blank">Privacy Policy</a>
+                    | Trikatuka v2.7 by <a href="http://aknowakowski.blogspot.com" target="_blank">akn</a></span>
             </div>
         </div>
     </div>
@@ -132,6 +123,7 @@
                     "app/controllers/LoginCtrl.js",
                     "app/controllers/MainCtrl.js",
                     "app/controllers/PlaylistListCtrl.js",
+                    "app/controllers/PodcastListCtrl.js",
                     "app/controllers/TrackListCtrl.js",
                     "app/directives/checkbox.js",
                     "app/directives/owner.js",
@@ -140,12 +132,14 @@
                     "app/factories/Checkboxes.js",
                     "app/factories/Pagination.js",
                     "app/factories/Playlist.js",
+                    "app/factories/Podcast.js",
                     "app/factories/Track.js",
                     "app/factories/User.js",
                     "app/services/AlbumService.js",
                     "app/services/ArtistService.js",
                     "app/services/AuthService.js",
                     "app/services/PlaylistService.js",
+                    "app/services/PodcastService.js",
                     "app/services/RequestHelper.js",
                     "app/services/Spotify.js",
                     "app/services/TrackService.js",
@@ -156,24 +150,27 @@
                 angular.forEach(files, function (item) {
                     head.append('<script src="' + item + '" type="application/javascript">');
                 });
+                setTimeout(() => {
+                    angular.bootstrap($('#app'), ['trikatuka2']);
+                });
             }
             else {
                 var script = document.createElement('script');
                 script.src = 'dist/app.js';
-                script.onload = function() {
+                script.onload = function () {
                     angular.bootstrap($('#app'), ['trikatuka2']);
                 }
                 document.head.appendChild(script);
-                
+
             }
             var appDiv = $('#app');
             appDiv.css({ visibility: 'visible' });
 
-            jQuery.fn.cookiesEU({
-                text: 'This website makes use of cookies to enhance browsing experience and provide additional functionality. By closing this message you give your permission to this website to store small bits of data as on your device.',
-                position: 'top',
-                auto_accept: false
-            });
+            // jQuery.fn.cookiesEU({
+            //     text: 'This website makes use of cookies to enhance browsing experience and provide additional functionality. By closing this message you give your permission to this website to store small bits of data as on your device.',
+            //     position: 'top',
+            //     auto_accept: false
+            // });
         });
 
     </script>

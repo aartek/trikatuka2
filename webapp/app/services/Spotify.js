@@ -34,6 +34,18 @@ angular.module('trikatuka2').service('Spotify', function ($http, $q) {
         });
     };
 
+    this.put = function (url, user, data, params) {
+        return beforeRequest(user).then(function (usr) {
+            return $http({
+                url: url,
+                method: 'PUT',
+                headers: buildHeaders(usr),
+                data: data,
+                params: params
+            });
+        });
+    };
+
     function beforeRequest(user) {
         var deferred = $q.defer();
 

@@ -1,12 +1,10 @@
 "use strict"
 
-var STATE_KEY = '_state'
-var CODE_VERIFIER_KEY = '_code_verifier'
-var USER_DATA_KEY = '_user_data'
 
-var REFRESH_THRESHOLD_SECONDS = 10 * 60;
 
 angular.module('trikatuka2').service('AuthService', function (CLIENT_ID, REDIRECT_URI) {
+    var STATE_KEY = '_state'
+    var CODE_VERIFIER_KEY = '_code_verifier'
 
     var privileges = ['user-library-read',
         'user-library-modify',

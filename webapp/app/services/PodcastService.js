@@ -1,8 +1,8 @@
 "use strict";
 
-angular.module('trikatuka2').service('TrackService', function (Spotify, $q, RequestHelper, $timeout) {
-    this.loadTracks = function(user, params, itemsTransformer){
-        return Spotify.get('https://api.spotify.com/v1/me/tracks', user, params).then(function(response){
+angular.module('trikatuka2').service('PodcastService', function (Spotify, $q, RequestHelper, $timeout) {
+    this.loadPodcasts = function(user, params, itemsTransformer){
+        return Spotify.get('https://api.spotify.com/v1/me/shows', user, params).then(function(response){
             return {
                 items: itemsTransformer ? _.map(response.data.items, itemsTransformer) : response.data.items,
                 total: response.data.total
@@ -10,44 +10,27 @@ angular.module('trikatuka2').service('TrackService', function (Spotify, $q, Requ
         });
     };
 
-    this.transferAll = function(user, targetUser, keepOrder, notifier){
+    this.transferAll = function(user, targetUser){
         var deferred = $q.defer();
 
-        var url = 'https://api.spotify.com/v1/me/tracks';
+        var url = 'https://api.spotify.com/v1/me/shows';
         function Page(items){
             this.items = items;
 
-            this.transfer = function (notifier) {
-                var req = Spotify.put(url, targetUser, {ids: this.items});
-                if(keepOrder) {
-                    req = req.then(()=>{
-                        if(notifier){
-                            notifier();
-                        }
-                        //needed because it seems that tracks are sorted by saved date
-                        var sleep = $q.defer()
-                        setTimeout(() => {
-                            sleep.resolve();
-                        }, 1000);
-                        return sleep.promise;
-                    });
-                }
-
-                return req;
+            this.transfer = function () {
+                return Spotify.put(url, targetUser, {}, {ids: this.items.join(',')});
             }
         }
 
-        getAll(user).then(function(tracks){
-            tracks.reverse()
-            var size = keepOrder ? 1 : 50;
-            var pages = Math.ceil(tracks.length / size);
+        getAll(user).then(function(podcasts){
+            var pages = Math.ceil(podcasts.length / 50);
 
             var toTransfer = [];
             for(var i=0; i<pages; i++) {
-                var data  = tracks.slice(i * size, (i * size) + size);
+                var data  = podcasts.slice(i * 50, (i * 50) + 50);
                 toTransfer.push(new Page(data));
             }
-            return RequestHelper.doAction('transfer', toTransfer, [notifier]).then(function () {
+            return RequestHelper.doAction('transfer',toTransfer).then(function () {
                 deferred.resolve();
             });
 
@@ -57,14 +40,14 @@ angular.module('trikatuka2').service('TrackService', function (Spotify, $q, Requ
 
     function getAll(user){
         var deferred = $q.defer();
-        var url = 'https://api.spotify.com/v1/me/tracks';
+        var url = 'https://api.spotify.com/v1/me/shows';
         var params = {
-            limit: 50,
+            limit: 1,
             offset: 0
         };
         Spotify.get(url, user, params).then(function(response){
             var total = response.data.total;
-            var tracks = [];
+            var podcasts = [];
 
             function Page(params) {
                 this.getItems = function () {
@@ -84,9 +67,9 @@ angular.module('trikatuka2').service('TrackService', function (Spotify, $q, Requ
             
             return RequestHelper.doAction('getItems',pagesToLoad).then(function (result) {
                 _.each(result.success, function (items) {
-                    tracks = tracks.concat(items);
+                    podcasts = podcasts.concat(items);
                 });
-                deferred.resolve(tracks);
+                deferred.resolve(podcasts);
             }); 
 
         });
@@ -101,7 +84,7 @@ angular.module('trikatuka2').service('TrackService', function (Spotify, $q, Requ
 
     function getIds(items){
         return _.map(items, function(item){
-            return item.track.id;
+            return item.show.id;
         });
     }
 });

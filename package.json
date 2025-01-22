@@ -5,6 +5,7 @@
     "start": "cp config.dev.json webapp/config.json && node_modules/.bin/grunt && http-server -p 8080 webapp"
   },
   "dependencies": {
+    "keycloak-angular": "^16.0.1"
   },
   "devDependencies": {
     "grunt": "1.0.1",

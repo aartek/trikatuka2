@@ -2,7 +2,7 @@ var app = angular.module('trikatuka2', ['ngRoute', 'ngResource', 'btford.socket-
 
 
 angular.module('trikatuka2').constant('CLIENT_ID', window.trikatukaConfig.clientId)
-angular.module('trikatuka2').constant('REDIRECT_URI', window.trikatukaConfig.redirectUri)
+angular.module('trikatuka2').constant('REDIRECT_URI', window.location.origin + '/afterLogin')
 
 angular.module('trikatuka2').config(function ($routeProvider) {
 

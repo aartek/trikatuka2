@@ -1,9 +1,7 @@
 <div class="uk-width-1-1">
     <div class="uk-width-1-1 uk-margin-small-bottom">
-        <button class="uk-button uk-button-success" ng-click="transferAll()" ng-disabled="mainVM.viewDisabled || !items || !items.length || !mainVM.user1.authData || !mainVM.user2.authData" title="Transfers your all saved tracks"><i class="uk-icon-send uk-margin-small-right"></i>Transfer all</button>
+        <button class="uk-button uk-button-success" ng-click="transferAll()" ng-disabled="mainVM.viewDisabled || !items || !items.length || !mainVM.user1.authData || !mainVM.user2.authData" title="Transfers your all saved podcasts"><i class="uk-icon-send uk-margin-small-right"></i>Transfer all</button>
         <i class="uk-icon-spinner uk-icon-spin" ng-show="mainVM.viewDisabled"></i>
-        <input id="experimentalUpload" type="checkbox" ng-model="form.keepOrder" title="Keep tracks order"/><label class="uk-margin-small-top" for="experimentalUpload">EXPERIMENTAL: Keep order. (Takes much more time to transfer. ~1s per track)</label>
-        <p ng-if="form.keepOrder && progress>0"><span>Progress: {{progress}}/{{total}}</span></p>
     </div>
     <div class="uk-width-1-1">
         <div class="uk-float-right uk-margin-small-bottom">
@@ -14,14 +12,12 @@
             <tr>
                 <th>#</th>
                 <th>Title</th>
-                <th>Artist</th>
-                <th>Album</th>
+                <th>Publisher</th>
             </tr>
             <tr ng-repeat="item in items">
                 <td>{{pagination.offset + $index + 1}}.</td>
                 <td>{{item.name}}</td>
-                <td><span ng-repeat="artist in item.artists">{{artist.name}}<span ng-hide="$last">, </span></span></td>
-                <td>{{item.album.name}}</td>
+                <td>{{item.publisher}}</td>
             </tr>
         </table>
         <div ng-show="!items || !items.length" class="uk-text-muted uk-text-center">

@@ -1,8 +1,8 @@
 "use strict";
 
 angular.module('trikatuka2').factory('Pagination', function () {
-    function Pagination() {
-        this.limit = 10;
+    function Pagination(limit) {
+        this.limit = limit || 10;
         this.offset = 0;
         this.total = 0;
         this.pages = 0;
