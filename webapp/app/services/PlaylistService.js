@@ -15,12 +15,16 @@ angular.module('trikatuka2').service('PlaylistService', function (Spotify, $q, R
             name: name,
             public: isPublic || false
         };
-        var url = sprintf('https://api.spotify.com/v1/users/%s/playlists', user.getUserId());
-        return Spotify.post(url, user, data);
+        return Spotify.post('https://api.spotify.com/v1/me/playlists', user, data);
     };
 
     this.addTracksToPlaylist = function (tracks, user, playlistId) {
         var pages = Math.ceil(tracks.length / 100);
+
+        function uriOf(item) {
+            var track = item.track || item.item;
+            return track && track.uri;
+        }
 
         function Page(data) {
             this.add = function () {
@@ -28,21 +32,19 @@ angular.module('trikatuka2').service('PlaylistService', function (Spotify, $q, R
             }
         }
 
-        var url = sprintf('https://api.spotify.com/v1/users/%s/playlists/%s/tracks', user.getUserId(), playlistId);
+        var url = sprintf('https://api.spotify.com/v1/playlists/%s/items', playlistId);
 
         var promises = [];
         for (var i = 0; i < pages; i++) {
             var data = {
                 uris: _.chain(tracks.slice(i * 100, (i * 100) + 100))
                     .filter(function (item) {
-                        if (!item.track || !item.track.uri) {
+                        if (!uriOf(item)) {
                             console.error({ item: item, error: "Something is wrong with this track so it couldn't be added to playlist: " + playlistId + ". Skipping this track." });
                         }
-                        return item.track && item.track.uri;
+                        return !!uriOf(item);
                     })
-                    .map(function (item) {
-                        return item.track.uri;
-                    })
+                    .map(uriOf)
             };
             promises.push(new Page(data));
         }

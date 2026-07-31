@@ -46,6 +46,13 @@ angular.module('trikatuka2').service('Spotify', function ($http, $q) {
         });
     };
 
+    this.SAVE_LIBRARY_BATCH_SIZE = 40;
+
+    this.saveToLibrary = function (uris, user) {
+        var url = 'https://api.spotify.com/v1/me/library?uris=' + encodeURIComponent(uris.join(','));
+        return this.put(url, user);
+    };
+
     function beforeRequest(user) {
         var deferred = $q.defer();
 

@@ -13,33 +13,30 @@ angular.module('trikatuka2').service('TrackService', function (Spotify, $q, Requ
     this.transferAll = function(user, targetUser, keepOrder, notifier){
         var deferred = $q.defer();
 
-        var url = 'https://api.spotify.com/v1/me/tracks';
         function Page(items){
             this.items = items;
 
             this.transfer = function (notifier) {
-                var req = Spotify.put(url, targetUser, {ids: this.items});
-                if(keepOrder) {
-                    req = req.then(()=>{
-                        if(notifier){
-                            notifier();
-                        }
-                        //needed because it seems that tracks are sorted by saved date
-                        var sleep = $q.defer()
-                        setTimeout(() => {
-                            sleep.resolve();
-                        }, 1000);
-                        return sleep.promise;
-                    });
-                }
-
-                return req;
+                return Spotify.saveToLibrary(items, targetUser).then(function () {
+                    if (notifier) {
+                        notifier(items.length);
+                    }
+                    if (!keepOrder) {
+                        return;
+                    }
+                    //needed because it seems that tracks are sorted by saved date
+                    var sleep = $q.defer();
+                    setTimeout(() => {
+                        sleep.resolve();
+                    }, 1000);
+                    return sleep.promise;
+                });
             }
         }
 
         getAll(user).then(function(tracks){
             tracks.reverse()
-            var size = keepOrder ? 1 : 50;
+            var size = keepOrder ? 1 : Spotify.SAVE_LIBRARY_BATCH_SIZE;
             var pages = Math.ceil(tracks.length / size);
 
             var toTransfer = [];
@@ -47,10 +44,12 @@ angular.module('trikatuka2').service('TrackService', function (Spotify, $q, Requ
                 var data  = tracks.slice(i * size, (i * size) + size);
                 toTransfer.push(new Page(data));
             }
-            return RequestHelper.doAction('transfer', toTransfer, [notifier]).then(function () {
-                deferred.resolve();
+            return RequestHelper.doAction('transfer', toTransfer, [notifier]).then(function (result) {
+                deferred.resolve(result);
             });
 
+        }, function (error) {
+            deferred.reject(error);
         });
         return deferred.promise;
     };
@@ -87,21 +86,25 @@ angular.module('trikatuka2').service('TrackService', function (Spotify, $q, Requ
                     tracks = tracks.concat(items);
                 });
                 deferred.resolve(tracks);
-            }); 
+            });
 
+        }, function (error) {
+            deferred.reject(error);
         });
         return deferred.promise;
     }
 
     function load(url, user, params){
         return Spotify.get(url, user, params).then(function(response){
-            return getIds(response.data.items);
+            return getUris(response.data.items);
         });
     }
 
-    function getIds(items){
-        return _.map(items, function(item){
-            return item.track.id;
+    function getUris(items){
+        return _.filter(_.map(items, function(item){
+            return item.track && item.track.uri;
+        }), function(uri){
+            return uri && uri.indexOf('spotify:track:') === 0;
         });
     }
 });

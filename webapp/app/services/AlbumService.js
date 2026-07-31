@@ -13,21 +13,21 @@ angular.module('trikatuka2').service('AlbumService', function (Spotify, $q, Requ
     this.transferAll = function(user, targetUser){
         var deferred = $q.defer();
 
-        var url = 'https://api.spotify.com/v1/me/albums';
         function Page(items){
             this.items = items;
 
             this.transfer = function () {
-                return Spotify.put(url, targetUser, {ids: this.items});
+                return Spotify.saveToLibrary(this.items, targetUser);
             }
         }
 
         getAll(user).then(function(albums){
-            var pages = Math.ceil(albums.length / 50);
+            var size = Spotify.SAVE_LIBRARY_BATCH_SIZE;
+            var pages = Math.ceil(albums.length / size);
 
             var toTransfer = [];
             for(var i=0; i<pages; i++) {
-                var data  = albums.slice(i * 50, (i * 50) + 50);
+                var data  = albums.slice(i * size, (i * size) + size);
                 toTransfer.push(new Page(data));
             }
             return RequestHelper.doAction('transfer',toTransfer).then(function () {
@@ -78,13 +78,13 @@ angular.module('trikatuka2').service('AlbumService', function (Spotify, $q, Requ
 
     function load(url, user, params){
         return Spotify.get(url, user, params).then(function(response){
-            return getIds(response.data.items);
+            return getUris(response.data.items);
         });
     }
 
-    function getIds(items){
-        return _.map(items, function(item){
-            return item.album.id;
-        });
+    function getUris(items){
+        return _.compact(_.map(items, function(item){
+            return item.album && item.album.uri;
+        }));
     }
 });
